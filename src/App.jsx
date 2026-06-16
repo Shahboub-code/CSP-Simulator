@@ -44,12 +44,8 @@ function App() {
       [currentQ.id]: option
     }));
 
-    // Auto-advance after a short delay so the user can see the correct answer
-    if (currentIndex < questions.length - 1) {
-      setTimeout(() => {
-        setCurrentIndex(prevIndex => prevIndex + 1);
-      }, 2500); // 2.5s delay gives enough time to see the Correct/Incorrect indicator
-    }
+    // We have removed the auto-advance. 
+    // The user will now manually click the "Next Question" button when they are ready to move on.
   };
 
   const handleToggleFlag = () => {
