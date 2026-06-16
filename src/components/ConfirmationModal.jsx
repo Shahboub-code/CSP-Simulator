@@ -2,15 +2,19 @@ import React, { useEffect } from 'react';
 import { AlertTriangle, HelpCircle } from 'lucide-react';
 
 const ConfirmationModal = ({ isOpen, type, onConfirm, onCancel }) => {
-  if (!isOpen) return null;
-
   // Prevent background scrolling when modal is open
   useEffect(() => {
-    document.body.style.overflow = 'hidden';
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
     return () => {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = '';
     };
   }, [isOpen]);
+
+  if (!isOpen) return null;
 
   const isEarly = type === 'endEarly';
   
