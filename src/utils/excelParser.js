@@ -153,7 +153,7 @@ export const parseExcelFile = (file) => {
 
 export const loadDefaultBank = async () => {
   try {
-    const response = await fetch('/Exams.xlsx');
+    const response = await fetch(`${import.meta.env.BASE_URL}Exams.xlsx`);
     if (!response.ok) {
       throw new Error(`Failed to fetch default bank: ${response.statusText}`);
     }
