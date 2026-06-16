@@ -44,11 +44,11 @@ function App() {
       [currentQ.id]: option
     }));
 
-    // Auto-advance after a short delay to make it smooth and fast
+    // Auto-advance after a short delay so the user can see the correct answer
     if (currentIndex < questions.length - 1) {
       setTimeout(() => {
         setCurrentIndex(prevIndex => prevIndex + 1);
-      }, 1200); // 1.2s delay gives enough time to see the Correct/Incorrect indicator
+      }, 2500); // 2.5s delay gives enough time to see the Correct/Incorrect indicator
     }
   };
 
