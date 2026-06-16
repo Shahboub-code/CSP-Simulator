@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import OptionCard from './OptionCard';
 import { Flag, LayoutGrid } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,7 +9,26 @@ const QuizView = ({
   onSelectOption, onToggleFlag, onNext, onPrevious, onJumpTo, onFinish
 }) => {
   const [showGrid, setShowGrid] = useState(false);
+  const [suspenseActive, setSuspenseActive] = useState(false);
+  const suspenseTimerRef = useRef(null);
   
+  useEffect(() => {
+    setSuspenseActive(false);
+    if (suspenseTimerRef.current) {
+      clearTimeout(suspenseTimerRef.current);
+    }
+  }, [currentIndex]);
+
+  const handleOptionClick = (option) => {
+    if (selectedAnswer) return;
+    setSuspenseActive(true);
+    onSelectOption(option);
+    
+    suspenseTimerRef.current = setTimeout(() => {
+      setSuspenseActive(false);
+    }, 2000); // 2 second suspense delay
+  };
+
   if (!question) return null;
 
   const isLast = currentIndex === total - 1;
@@ -94,7 +113,7 @@ const QuizView = ({
           <div className="space-y-3 mb-8">
             {question.options.map((option, idx) => {
               const isSelected = selectedAnswer === option;
-              const showResult = !!selectedAnswer;
+              const showResult = !!selectedAnswer && !suspenseActive;
               const isCorrectAnswer = option === question.correctAnswer;
               const isWrongSelected = isSelected && !isCorrectAnswer;
 
@@ -103,7 +122,7 @@ const QuizView = ({
                   key={idx}
                   option={option}
                   isSelected={isSelected}
-                  onClick={() => onSelectOption(option)}
+                  onClick={() => handleOptionClick(option)}
                   showResult={showResult}
                   isCorrectAnswer={isCorrectAnswer}
                   isWrongSelected={isWrongSelected}
