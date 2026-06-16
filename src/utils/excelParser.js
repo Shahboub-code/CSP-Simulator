@@ -110,13 +110,24 @@ const processWorkbook = (workbook) => {
       }
     }
 
+    const explanationKey = keys.find(k => {
+      const clean = k.trim().toUpperCase();
+      return clean.includes('EXPLANATION') || clean.includes('RATIONALE') || clean === 'REASON';
+    });
+    
+    let explanation = "";
+    if (explanationKey && row[explanationKey]) {
+      explanation = row[explanationKey].toString().trim();
+    }
+
     parsedQuestions.push({
       id: idCounter++,
       text: questionText,
       options: options,
       correctAnswer: correctAnswerText,
       correctLetter: correctLetter,
-      topic: finalTopic
+      topic: finalTopic,
+      explanation: explanation
     });
   }
   
