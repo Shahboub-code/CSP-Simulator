@@ -132,7 +132,7 @@ const QuizView = ({
           </div>
 
           {/* Explanation Box */}
-          {!!selectedAnswer && !suspenseActive && question.explanation && (
+          {!!selectedAnswer && !suspenseActive && (
             <motion.div 
               initial={{ opacity: 0, height: 0, marginTop: -20 }}
               animate={{ opacity: 1, height: 'auto', marginTop: 0 }}
@@ -144,9 +144,29 @@ const QuizView = ({
                 </svg>
                 Explanation
               </h3>
-              <p className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed text-sm">
-                {question.explanation}
-              </p>
+              
+              {question.explanation ? (
+                <p className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed text-sm">
+                  {question.explanation}
+                </p>
+              ) : (
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <p className="text-slate-600 dark:text-slate-400 text-sm italic">
+                    No explanation was provided in the Excel file for this question.
+                  </p>
+                  <a 
+                    href={`https://www.google.com/search?q=${encodeURIComponent(question.text)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 hover:border-safety-blue dark:hover:border-cyan-500 text-safety-blue dark:text-cyan-400 px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-sm"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/>
+                    </svg>
+                    Search Google
+                  </a>
+                </div>
+              )}
             </motion.div>
           )}
         </motion.div>
