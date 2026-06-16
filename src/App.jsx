@@ -3,6 +3,7 @@ import Header from './components/Header';
 import SetupView from './components/SetupView';
 import QuizView from './components/QuizView';
 import ResultsView from './components/ResultsView';
+import ConfirmationModal from './components/ConfirmationModal';
 
 function App() {
   const [view, setView] = useState('setup');
@@ -11,6 +12,8 @@ function App() {
   const [answers, setAnswers] = useState({});
   const [flagged, setFlagged] = useState({});
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [confirmModalType, setConfirmModalType] = useState('submit');
 
   useEffect(() => {
     if (isDarkMode) {
@@ -32,10 +35,21 @@ function App() {
 
   const handleSelectOption = (option) => {
     const currentQ = questions[currentIndex];
-    setAnswers({
-      ...answers,
+    
+    // Don't do anything if already answered
+    if (answers[currentQ.id]) return;
+
+    setAnswers(prev => ({
+      ...prev,
       [currentQ.id]: option
-    });
+    }));
+
+    // Auto-advance after a short delay to make it smooth and fast
+    if (currentIndex < questions.length - 1) {
+      setTimeout(() => {
+        setCurrentIndex(prevIndex => prevIndex + 1);
+      }, 1200); // 1.2s delay gives enough time to see the Correct/Incorrect indicator
+    }
   };
 
   const handleToggleFlag = () => {
@@ -50,9 +64,8 @@ function App() {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
-      if (window.confirm("You have reached the end of the exam. Are you sure you want to submit your answers?")) {
-        setView('results');
-      }
+      setConfirmModalType('submit');
+      setShowConfirmModal(true);
     }
   };
 
@@ -67,9 +80,17 @@ function App() {
   };
 
   const handleFinishEarly = () => {
-    if (window.confirm("Are you sure you want to end the exam early? You won't be able to change your answers.")) {
-      setView('results');
-    }
+    setConfirmModalType('endEarly');
+    setShowConfirmModal(true);
+  };
+
+  const confirmSubmit = () => {
+    setShowConfirmModal(false);
+    setView('results');
+  };
+
+  const cancelSubmit = () => {
+    setShowConfirmModal(false);
   };
 
   const handleRestart = () => {
@@ -122,6 +143,13 @@ function App() {
           />
         )}
       </main>
+
+      <ConfirmationModal 
+        isOpen={showConfirmModal}
+        type={confirmModalType}
+        onConfirm={confirmSubmit}
+        onCancel={cancelSubmit}
+      />
 
       {/* Creative Developer Credit */}
       <footer className="py-8 text-center pb-12">

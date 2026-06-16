@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import OptionCard from './OptionCard';
 import { Flag, LayoutGrid } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const QuizView = ({ 
   question, currentIndex, total, selectedAnswer, isFlagged, 
@@ -76,32 +77,42 @@ const QuizView = ({
         </div>
       )}
 
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 p-8 mb-6">
-        <h2 className="text-xl font-medium text-slate-dark dark:text-slate-200 leading-relaxed whitespace-pre-wrap">
-          {question.text}
-        </h2>
-      </div>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentIndex}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+        >
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 p-8 mb-6">
+            <h2 className="text-xl font-medium text-slate-dark dark:text-slate-200 leading-relaxed whitespace-pre-wrap">
+              {question.text}
+            </h2>
+          </div>
 
-      <div className="space-y-3 mb-8">
-        {question.options.map((option, idx) => {
-          const isSelected = selectedAnswer === option;
-          const showResult = !!selectedAnswer;
-          const isCorrectAnswer = option === question.correctAnswer;
-          const isWrongSelected = isSelected && !isCorrectAnswer;
+          <div className="space-y-3 mb-8">
+            {question.options.map((option, idx) => {
+              const isSelected = selectedAnswer === option;
+              const showResult = !!selectedAnswer;
+              const isCorrectAnswer = option === question.correctAnswer;
+              const isWrongSelected = isSelected && !isCorrectAnswer;
 
-          return (
-            <OptionCard 
-              key={idx}
-              option={option}
-              isSelected={isSelected}
-              onClick={() => onSelectOption(option)}
-              showResult={showResult}
-              isCorrectAnswer={isCorrectAnswer}
-              isWrongSelected={isWrongSelected}
-            />
-          );
-        })}
-      </div>
+              return (
+                <OptionCard 
+                  key={idx}
+                  option={option}
+                  isSelected={isSelected}
+                  onClick={() => onSelectOption(option)}
+                  showResult={showResult}
+                  isCorrectAnswer={isCorrectAnswer}
+                  isWrongSelected={isWrongSelected}
+                />
+              );
+            })}
+          </div>
+        </motion.div>
+      </AnimatePresence>
 
       <div className="flex flex-col-reverse sm:flex-row justify-between items-center border-t border-gray-200 dark:border-slate-700 pt-6 gap-4">
         <button
