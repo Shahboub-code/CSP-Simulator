@@ -1,9 +1,8 @@
-import React from 'react';
 
 const OptionCard = ({ option, isSelected, onClick, showResult, isCorrectAnswer, isWrongSelected }) => {
   
-  let cardStyles = '';
-  let dotStyles = '';
+  let cardStyles;
+  let dotStyles;
   
   if (showResult) {
     if (isCorrectAnswer) {

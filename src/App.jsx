@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Header from './components/Header';
 import SetupView from './components/SetupView';
 import QuizView from './components/QuizView';
@@ -25,8 +25,11 @@ function App() {
 
   const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
 
-  const handleDataLoaded = (loadedQuestions) => {
-    setQuestions(loadedQuestions);
+  const [examConfig, setExamConfig] = useState({ requiredScore: null, examName: '' });
+
+  const handleDataLoaded = ({ questions, requiredScore, examName }) => {
+    setQuestions(questions);
+    setExamConfig({ requiredScore, examName });
     setCurrentIndex(0);
     setAnswers({});
     setFlagged({});
@@ -135,6 +138,7 @@ function App() {
             questions={questions}
             answers={answers}
             flaggedMap={flagged}
+            examConfig={examConfig}
             onRestart={handleRestart}
           />
         )}

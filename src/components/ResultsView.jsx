@@ -1,7 +1,6 @@
-import React from 'react';
 import { CheckCircle2, XCircle, RotateCcw, Flag, ArrowDown } from 'lucide-react';
 
-const ResultsView = ({ questions, answers, flaggedMap, onRestart }) => {
+const ResultsView = ({ questions, answers, flaggedMap, examConfig, onRestart }) => {
   const score = questions.reduce((acc, q) => {
     return acc + (answers[q.id] === q.correctAnswer ? 1 : 0);
   }, 0);
@@ -10,7 +9,17 @@ const ResultsView = ({ questions, answers, flaggedMap, onRestart }) => {
   const incorrectCount = questions.length - score - skippedCount;
   
   const percentage = Math.round((score / questions.length) * 100);
-  const passed = percentage >= 60; // 60% Passing threshold
+  
+  let passed;
+  let requiredCorrect;
+  if (examConfig && examConfig.requiredScore) {
+    requiredCorrect = examConfig.requiredScore;
+    passed = score >= requiredCorrect;
+  } else {
+    // Default 60% passing
+    requiredCorrect = Math.ceil(questions.length * 0.6);
+    passed = percentage >= 60;
+  }
 
   return (
     <div className="max-w-4xl mx-auto mt-8 pb-12">
@@ -59,6 +68,7 @@ const ResultsView = ({ questions, answers, flaggedMap, onRestart }) => {
             <div className="bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 rounded-xl p-5 flex flex-col items-center justify-center transform hover:scale-105 transition-transform">
               <span className="text-4xl font-bold text-emerald-600 dark:text-emerald-400 mb-1">{score}</span>
               <span className="text-sm font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">Correct</span>
+              <span className="text-xs font-medium text-emerald-600/70 dark:text-emerald-400/70 mt-1">Needed: {requiredCorrect}</span>
             </div>
             <div className="bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 rounded-xl p-5 flex flex-col items-center justify-center transform hover:scale-105 transition-transform">
               <span className="text-4xl font-bold text-rose-600 dark:text-rose-400 mb-1">{incorrectCount}</span>
@@ -99,6 +109,8 @@ const ResultsView = ({ questions, answers, flaggedMap, onRestart }) => {
           const isCorrect = userAnswer === q.correctAnswer;
           const isUnanswered = !userAnswer;
           const isFlagged = flaggedMap && !!flaggedMap[q.id];
+          
+          if (isUnanswered) return null;
           
           return (
             <div key={q.id} className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden transition-colors">
@@ -141,6 +153,17 @@ const ResultsView = ({ questions, answers, flaggedMap, onRestart }) => {
                   );
                 })}
               </div>
+              
+              {q.explanation && (
+                <div className="px-6 pb-6 pt-2">
+                  <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 rounded-xl p-5">
+                    <h5 className="text-sm font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400 mb-2">Explanation</h5>
+                    <p className="text-gray-700 dark:text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">
+                      {q.explanation}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           );
         })}

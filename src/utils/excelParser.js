@@ -24,14 +24,17 @@ const processWorkbook = (workbook) => {
 
     const rawQuestion = row[questionKey].toString();
     
+    // Pre-process rawQuestion to insert newlines before inline options like " a. " or " A) "
+    const cleanedQuestion = rawQuestion.replace(/(?<!\n)\s+([A-E][.)])\s+/gi, '\n$1 ');
+    
     // Split by newlines to separate question from options
-    const lines = rawQuestion.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+    const lines = cleanedQuestion.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
     
     let questionText = "";
     const options = [];
     
     // Heuristic: lines starting with A., B., C., D. are options
-    const optionRegex = /^[A-E][.)]\s*/i;
+    const optionRegex = /^[-*]?\s*[A-E][.)]\s*/i;
     
     for (const line of lines) {
       if (optionRegex.test(line)) {
@@ -41,7 +44,22 @@ const processWorkbook = (workbook) => {
       }
     }
     
-    // If no options were found, skip (might be a header or invalid row)
+    // If no options were found, check if there are Option columns
+    if (options.length === 0) {
+      const optAKey = keys.find(k => k.trim().toUpperCase() === 'OPTION A');
+      const optBKey = keys.find(k => k.trim().toUpperCase() === 'OPTION B');
+      const optCKey = keys.find(k => k.trim().toUpperCase() === 'OPTION C');
+      const optDKey = keys.find(k => k.trim().toUpperCase() === 'OPTION D');
+      const optEKey = keys.find(k => k.trim().toUpperCase() === 'OPTION E');
+
+      if (optAKey && row[optAKey]) options.push(`A. ${row[optAKey]}`);
+      if (optBKey && row[optBKey]) options.push(`B. ${row[optBKey]}`);
+      if (optCKey && row[optCKey]) options.push(`C. ${row[optCKey]}`);
+      if (optDKey && row[optDKey]) options.push(`D. ${row[optDKey]}`);
+      if (optEKey && row[optEKey]) options.push(`E. ${row[optEKey]}`);
+    }
+
+    // If still no options were found, skip (might be a header or invalid row)
     if (options.length === 0) continue;
 
     let correctLetter = row[correctKey] ? row[correctKey].toString().trim().toUpperCase() : null;
@@ -75,8 +93,8 @@ const processWorkbook = (workbook) => {
           .join(' ');
           
         // Merge similar topics
-        if (cleanTopic.includes('Emergency Preaparedness') || cleanTopic.includes('Emergency Preparedness')) {
-          cleanTopic = 'Emergency Preparedness';
+        if (cleanTopic.includes('Emergency') || cleanTopic.includes('Disaster')) {
+          cleanTopic = 'Emergency Management & Preparedness';
         } else if (cleanTopic.includes('Employee Substance')) {
           cleanTopic = 'Employee Substance Abuse';
         } else if (cleanTopic.includes('Environmental') || cleanTopic === 'Epa') {
@@ -85,18 +103,39 @@ const processWorkbook = (workbook) => {
           cleanTopic = 'Ethics & Law';
         } else if (cleanTopic.includes('Hierarchy Of Control')) {
           cleanTopic = 'Hierarchy Of Control';
-        } else if (cleanTopic.includes('Ladder And Stair')) {
+        } else if (cleanTopic.includes('Ladder') || cleanTopic.includes('Stair')) {
           cleanTopic = 'Ladder & Stair Safety';
-        } else if (cleanTopic.includes('Risk Management')) {
+        } else if (cleanTopic.includes('Risk')) {
           cleanTopic = 'Risk Management';
-        } else if (cleanTopic.includes('Safety Management')) {
+        } else if (cleanTopic.includes('Safety Management') || cleanTopic === 'Management') {
           cleanTopic = 'Safety Management';
-        } else if (cleanTopic.includes('Scaffold')) {
+        } else if (cleanTopic.includes('Scaffold') || cleanTopic.includes('Aerial Platform')) {
           cleanTopic = 'Scaffold & Aerial Platforms';
-        } else if (cleanTopic === 'Math' || cleanTopic === 'Statistics') {
+        } else if (cleanTopic.includes('Math') || cleanTopic.includes('Statistic') || cleanTopic.includes('Probability') || cleanTopic.includes('Trigonometry')) {
           cleanTopic = 'Math & Statistics';
+        } else if (cleanTopic.includes('Confined Space')) {
+          cleanTopic = 'Confined Space';
+        } else if (cleanTopic.includes('Electric')) {
+          cleanTopic = 'Electrical Safety';
+        } else if (cleanTopic.includes('Engineering Econom')) {
+          cleanTopic = 'Engineering Economics';
+        } else if (cleanTopic.includes('Fire')) {
+          cleanTopic = 'Fire Safety & Prevention';
+        } else if (cleanTopic.includes('Hydraulic')) {
+          cleanTopic = 'Hydraulics';
+        } else if (cleanTopic.includes('Machine Guarding') || cleanTopic.includes('Machine Safety')) {
+          cleanTopic = 'Machine Guarding';
+        } else if (cleanTopic === 'Ppe' || cleanTopic === 'Personal Protective Equipment') {
+          cleanTopic = 'Personal Protective Equipment';
+        } else if (cleanTopic.includes('Liability')) {
+          cleanTopic = 'Liability';
         } else if (['Training', 'Trainee Evaluation', 'Needs Assessment', 'Course Evaluation'].includes(cleanTopic)) {
           cleanTopic = 'Training & Evaluation';
+        }
+        
+        // Safety net for dirty data strings (e.g. formula copy paste)
+        if (cleanTopic.length > 50) {
+          cleanTopic = 'General';
         }
         
         // Fix Acronyms (e.g. Ppe -> PPE)

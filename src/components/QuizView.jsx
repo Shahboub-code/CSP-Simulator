@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import OptionCard from './OptionCard';
 import { Flag, LayoutGrid } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,6 +13,7 @@ const QuizView = ({
   const suspenseTimerRef = useRef(null);
   
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSuspenseActive(false);
     if (suspenseTimerRef.current) {
       clearTimeout(suspenseTimerRef.current);
@@ -130,6 +131,21 @@ const QuizView = ({
               );
             })}
           </div>
+
+          {selectedAnswer && !suspenseActive && question.explanation && (
+            <motion.div 
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="mb-8"
+            >
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 rounded-xl p-5">
+                <h5 className="text-sm font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400 mb-2">Explanation</h5>
+                <p className="text-gray-700 dark:text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">
+                  {question.explanation}
+                </p>
+              </div>
+            </motion.div>
+          )}
 
         </motion.div>
       </AnimatePresence>
