@@ -1,9 +1,53 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, memo, useCallback } from 'react';
 import OptionCard from './OptionCard';
 import { Flag, LayoutGrid } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const QuizView = ({ 
+const GridButton = memo(({ id, idx, isAnswered, isFlagged, isCurrent, onJumpTo }) => {
+  let btnClass = "w-10 h-10 rounded-md font-medium text-sm flex flex-col items-center justify-center border-2 transition-all relative overflow-hidden ";
+  
+  if (isCurrent) {
+    btnClass += "border-slate-dark dark:border-slate-300 text-slate-dark dark:text-slate-200 bg-white dark:bg-slate-800 shadow-md ";
+  } else if (isFlagged) {
+    btnClass += "border-rose-500 dark:border-rose-500/50 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 font-bold ";
+  } else if (isAnswered) {
+    btnClass += "border-safety-blue/30 dark:border-cyan-500/30 bg-safety-blue/5 dark:bg-cyan-500/10 text-safety-blue dark:text-cyan-400 ";
+  } else {
+    btnClass += "border-yellow-200 dark:border-yellow-600 bg-yellow-50 dark:bg-yellow-700/50 text-yellow-400 dark:text-yellow-500 hover:bg-yellow-100 dark:hover:bg-yellow-700 ";
+  }
+
+  const handleClick = useCallback(() => onJumpTo(idx), [idx, onJumpTo]);
+
+  return (
+    <button onClick={handleClick} className={btnClass}>
+      {idx + 1}
+    </button>
+  );
+});
+GridButton.displayName = 'GridButton';
+
+const NavigationGrid = memo(({ showGrid, questions, answers, flaggedMap, currentIndex, onJumpTo }) => {
+  if (!showGrid) return null;
+  
+  return (
+    <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-4 mb-6 flex flex-wrap gap-2 max-h-48 overflow-y-auto animate-in slide-in-from-top-2 duration-200">
+      {questions.map((q, idx) => (
+        <GridButton
+          key={q.id}
+          id={q.id}
+          idx={idx}
+          isAnswered={!!answers[q.id]}
+          isFlagged={!!flaggedMap[q.id]}
+          isCurrent={idx === currentIndex}
+          onJumpTo={onJumpTo}
+        />
+      ))}
+    </div>
+  );
+});
+NavigationGrid.displayName = 'NavigationGrid';
+
+const QuizView = memo(({ 
   question, currentIndex, total, selectedAnswer, isFlagged, 
   answers, flaggedMap, questions,
   onSelectOption, onToggleFlag, onNext, onPrevious, onJumpTo, onFinish
@@ -20,7 +64,7 @@ const QuizView = ({
     }
   }, [currentIndex]);
 
-  const handleOptionClick = (option) => {
+  const handleOptionClick = useCallback((option) => {
     if (selectedAnswer) return;
     setSuspenseActive(true);
     onSelectOption(option);
@@ -28,7 +72,7 @@ const QuizView = ({
     suspenseTimerRef.current = setTimeout(() => {
       setSuspenseActive(false);
     }, 2000); // 2 second suspense delay
-  };
+  }, [selectedAnswer, onSelectOption]);
 
   if (!question) return null;
 
@@ -65,37 +109,14 @@ const QuizView = ({
       </div>
 
       {/* Navigation Grid */}
-      {showGrid && (
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 p-4 mb-6 flex flex-wrap gap-2 max-h-48 overflow-y-auto animate-in slide-in-from-top-2 duration-200">
-          {questions.map((q, idx) => {
-            const hasAnswer = !!answers[q.id];
-            const flagged = !!flaggedMap[q.id];
-            const isCurrent = idx === currentIndex;
-            
-            let btnClass = "w-10 h-10 rounded-md font-medium text-sm flex flex-col items-center justify-center border-2 transition-all relative overflow-hidden ";
-            
-            if (isCurrent) {
-              btnClass += "border-slate-dark dark:border-slate-300 text-slate-dark dark:text-slate-200 bg-white dark:bg-slate-800 shadow-md ";
-            } else if (flagged) {
-              btnClass += "border-rose-500 dark:border-rose-500/50 bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400 font-bold ";
-            } else if (hasAnswer) {
-              btnClass += "border-safety-blue/30 dark:border-cyan-500/30 bg-safety-blue/5 dark:bg-cyan-500/10 text-safety-blue dark:text-cyan-400 ";
-            } else {
-              btnClass += "border-yellow-200 dark:border-yellow-600 bg-yellow-50 dark:bg-yellow-700/50 text-yellow-400 dark:text-yellow-500 hover:bg-yellow-100 dark:hover:bg-yellow-700 ";
-            }
-
-            return (
-              <button 
-                key={q.id} 
-                onClick={() => onJumpTo(idx)}
-                className={btnClass}
-              >
-                {idx + 1}
-              </button>
-            );
-          })}
-        </div>
-      )}
+      <NavigationGrid 
+        showGrid={showGrid} 
+        questions={questions} 
+        answers={answers} 
+        flaggedMap={flaggedMap} 
+        currentIndex={currentIndex} 
+        onJumpTo={onJumpTo} 
+      />
 
       <AnimatePresence mode="wait">
         <motion.div
@@ -123,7 +144,7 @@ const QuizView = ({
                   key={idx}
                   option={option}
                   isSelected={isSelected}
-                  onClick={() => handleOptionClick(option)}
+                  onClick={handleOptionClick}
                   showResult={showResult}
                   isCorrectAnswer={isCorrectAnswer}
                   isWrongSelected={isWrongSelected}
@@ -134,8 +155,10 @@ const QuizView = ({
 
           {selectedAnswer && !suspenseActive && question.explanation && (
             <motion.div 
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
+              initial={{ opacity: 0, scaleY: 0.95 }}
+              animate={{ opacity: 1, scaleY: 1 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              style={{ originY: 0 }}
               className="mb-8"
             >
               <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 rounded-xl p-5">
@@ -184,6 +207,8 @@ const QuizView = ({
       </div>
     </div>
   );
-};
+});
+
+QuizView.displayName = 'QuizView';
 
 export default QuizView;

@@ -1,5 +1,6 @@
+import { memo } from 'react';
 
-const OptionCard = ({ option, isSelected, onClick, showResult, isCorrectAnswer, isWrongSelected }) => {
+const OptionCard = memo(({ option, isSelected, onClick, showResult, isCorrectAnswer, isWrongSelected }) => {
   
   let cardStyles;
   let dotStyles;
@@ -25,9 +26,16 @@ const OptionCard = ({ option, isSelected, onClick, showResult, isCorrectAnswer, 
     }
   }
 
+  // Use a stable click handler internally to pass the option back up
+  const handleClick = () => {
+    if (!showResult && onClick) {
+      onClick(option);
+    }
+  };
+
   return (
     <div 
-      onClick={showResult ? undefined : onClick}
+      onClick={handleClick}
       className={`p-4 rounded-xl transition-all duration-200 border-2 relative ${showResult ? 'cursor-default' : 'cursor-pointer'} ${cardStyles}`}
     >
       <div className="flex items-start gap-3">
@@ -52,6 +60,8 @@ const OptionCard = ({ option, isSelected, onClick, showResult, isCorrectAnswer, 
       )}
     </div>
   );
-};
+});
+
+OptionCard.displayName = 'OptionCard';
 
 export default OptionCard;
