@@ -87,7 +87,7 @@ const processWorkbook = (workbook) => {
     // Look for optional Topic and Explanation columns
     const topicKey = keys.find(k => {
       const clean = k.trim().toUpperCase();
-      return clean === 'TOPIC' || clean === 'DOMAIN' || clean === 'CATEGORY';
+      return clean === 'TOPIC' || clean === 'DOMAIN' || clean === 'CATEGORY' || clean.includes('TOPIC') || clean.includes('DOMAIN');
     });
     
     let finalTopic = "General";
