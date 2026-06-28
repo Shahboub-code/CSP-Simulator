@@ -24,39 +24,39 @@ const processWorkbook = (workbook) => {
 
     const rawQuestion = row[questionKey].toString();
     
-    // Pre-process rawQuestion to insert newlines before inline options like " a. " or " A) "
-    const cleanedQuestion = rawQuestion.replace(/(?<!\n)\s+([A-E][.)])\s+/gi, '\n$1 ');
-    
-    // Split by newlines to separate question from options
-    const lines = cleanedQuestion.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
-    
+    // Check if column-based options (Option A-D) are populated; prefer those over inline split.
+    const optAKey = keys.find(k => k.trim().toUpperCase() === 'OPTION A');
+    const optBKey = keys.find(k => k.trim().toUpperCase() === 'OPTION B');
+    const optCKey = keys.find(k => k.trim().toUpperCase() === 'OPTION C');
+    const optDKey = keys.find(k => k.trim().toUpperCase() === 'OPTION D');
+    const optEKey = keys.find(k => k.trim().toUpperCase() === 'OPTION E');
+
+    const colOptCount = [optAKey, optBKey, optCKey, optDKey, optEKey]
+      .filter(k => k && row[k] && String(row[k]).trim()).length;
+
     let questionText = "";
     const options = [];
-    
-    // Heuristic: lines starting with A., B., C., D. are options
-    const optionRegex = /^[-*]?\s*[A-E][.)]\s*/i;
-    
-    for (const line of lines) {
-      if (optionRegex.test(line)) {
-        options.push(line);
-      } else {
-        questionText += (questionText ? "\n" : "") + line;
-      }
-    }
-    
-    // If no options were found, check if there are Option columns
-    if (options.length === 0) {
-      const optAKey = keys.find(k => k.trim().toUpperCase() === 'OPTION A');
-      const optBKey = keys.find(k => k.trim().toUpperCase() === 'OPTION B');
-      const optCKey = keys.find(k => k.trim().toUpperCase() === 'OPTION C');
-      const optDKey = keys.find(k => k.trim().toUpperCase() === 'OPTION D');
-      const optEKey = keys.find(k => k.trim().toUpperCase() === 'OPTION E');
 
+    if (colOptCount >= 2) {
+      // Column-based options: use the full question text as-is, options come from columns.
+      questionText = rawQuestion;
       if (optAKey && row[optAKey]) options.push(`A. ${row[optAKey]}`);
       if (optBKey && row[optBKey]) options.push(`B. ${row[optBKey]}`);
       if (optCKey && row[optCKey]) options.push(`C. ${row[optCKey]}`);
       if (optDKey && row[optDKey]) options.push(`D. ${row[optDKey]}`);
       if (optEKey && row[optEKey]) options.push(`E. ${row[optEKey]}`);
+    } else {
+      // Inline style: options are embedded in the question text.
+      const cleanedQuestion = rawQuestion.replace(/(?<!\n)\s+([A-E][.)])\s+/gi, '\n$1 ');
+      const lines = cleanedQuestion.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
+      const optionRegex = /^[-*]?\s*[A-E][.)]\s*/i;
+      for (const line of lines) {
+        if (optionRegex.test(line)) {
+          options.push(line);
+        } else {
+          questionText += (questionText ? "\n" : "") + line;
+        }
+      }
     }
 
     // If still no options were found, skip (might be a header or invalid row)
@@ -73,6 +73,10 @@ const processWorkbook = (workbook) => {
     // Map the correct letter to the full option text
     const correctAnswerIndex = options.findIndex(opt => opt.toUpperCase().startsWith(correctLetter));
     const correctAnswerText = correctAnswerIndex !== -1 ? options[correctAnswerIndex] : (correctLetter || "Unknown");
+
+    // Defensive guard: skip questions whose correct answer cannot be matched to any option.
+    // This prevents silently grading a question as always-wrong.
+    if (correctAnswerIndex === -1) continue;
 
     // Look for optional Topic and Explanation columns
     const topicKey = keys.find(k => {
@@ -117,8 +121,10 @@ const processWorkbook = (workbook) => {
           cleanTopic = 'Confined Space';
         } else if (cleanTopic.includes('Electric')) {
           cleanTopic = 'Electrical Safety';
-        } else if (cleanTopic.includes('Engineering Econom')) {
-          cleanTopic = 'Engineering Economics';
+        } else if (cleanTopic.includes('Engineering Econom') || cleanTopic === 'Engineering Economy') {
+          cleanTopic = 'Math & Statistics';
+        } else if (cleanTopic === 'Engineering') {
+          cleanTopic = 'Math & Statistics';
         } else if (cleanTopic.includes('Fire')) {
           cleanTopic = 'Fire Safety & Prevention';
         } else if (cleanTopic.includes('Hydraulic')) {

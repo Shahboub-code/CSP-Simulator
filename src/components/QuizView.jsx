@@ -3,7 +3,7 @@ import OptionCard from './OptionCard';
 import { Flag, LayoutGrid } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const GridButton = memo(({ id, idx, isAnswered, isFlagged, isCurrent, onJumpTo }) => {
+const GridButton = memo(({ idx, isAnswered, isFlagged, isCurrent, onJumpTo }) => {
   let btnClass = "w-10 h-10 rounded-md font-medium text-sm flex flex-col items-center justify-center border-2 transition-all relative overflow-hidden ";
   
   if (isCurrent) {
@@ -34,7 +34,6 @@ const NavigationGrid = memo(({ showGrid, questions, answers, flaggedMap, current
       {questions.map((q, idx) => (
         <GridButton
           key={q.id}
-          id={q.id}
           idx={idx}
           isAnswered={!!answers[q.id]}
           isFlagged={!!flaggedMap[q.id]}
@@ -57,7 +56,6 @@ const QuizView = memo(({
   const suspenseTimerRef = useRef(null);
   
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSuspenseActive(false);
     if (suspenseTimerRef.current) {
       clearTimeout(suspenseTimerRef.current);

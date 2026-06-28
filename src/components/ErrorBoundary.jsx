@@ -6,14 +6,14 @@ class ErrorBoundary extends React.Component {
     this.state = { hasError: false, error: null, errorInfo: null };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError() {
     return { hasError: true };
   }
 
   componentDidCatch(error, errorInfo) {
     this.setState({
-      error: error,
-      errorInfo: errorInfo
+      error,
+      errorInfo
     });
     console.error("ErrorBoundary caught an error", error, errorInfo);
   }
@@ -39,7 +39,7 @@ class ErrorBoundary extends React.Component {
               Refresh Page
             </button>
             
-            {process.env.NODE_ENV === 'development' && this.state.error && (
+            {import.meta.env?.DEV && this.state.error && (
               <div className="mt-8 text-left bg-gray-100 dark:bg-slate-900 p-4 rounded-lg overflow-x-auto text-xs text-red-500 font-mono">
                 <p className="font-bold mb-2">{this.state.error.toString()}</p>
                 <p className="whitespace-pre-wrap">{this.state.errorInfo.componentStack}</p>

@@ -50,8 +50,8 @@ search_dirs = ['.', 'dist', 'public', 'Bank', r'C:\Users\pc3\Desktop\Bank']
 all_files = []
 for d in search_dirs:
     if os.path.isdir(d):
-        all_files.extend(glob.glob(os.path.join(d, '*.txt')))
-        all_files.extend(glob.glob(os.path.join(d, '*.csv')))
+        all_files.extend(glob.glob(os.path.join(d, '**', '*.txt'), recursive=True))
+        all_files.extend(glob.glob(os.path.join(d, '**', '*.csv'), recursive=True))
 
 all_dfs = [df_exams]
 
@@ -81,7 +81,7 @@ for f in all_files:
         print(f"Could not parse {f}: {e}")
 
 # Handle Questions_And_Answers.csv if it exists
-qa_files = glob.glob('dist/Questions_And_Answers.csv') + glob.glob('Questions_And_Answers.csv')
+qa_files = [f for f in all_files if "Questions_And_Answers.csv" in f and "node_modules" not in f]
 for qa_file in qa_files:
     try:
         df_qa = pd.read_csv(qa_file, on_bad_lines='skip')
