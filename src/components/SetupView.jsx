@@ -50,10 +50,9 @@ const SetupView = ({ onDataLoaded }) => {
         for (const q of allQuestions) {
           // Normalize text by lowercasing and keeping only alphanumeric
           const normalized = (q.text || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-          const key = normalized.substring(0, 150);
           
-          if (!seen.has(key)) {
-            seen.add(key);
+          if (!seen.has(normalized)) {
+            seen.add(normalized);
             uniqueQuestions.push(q);
           }
         }
