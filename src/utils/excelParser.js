@@ -47,9 +47,9 @@ const processWorkbook = (workbook) => {
       if (optEKey && row[optEKey]) options.push(`E. ${row[optEKey]}`);
     } else {
       // Inline style: options are embedded in the question text.
-      const cleanedQuestion = rawQuestion.replace(/(?<!\n)\s+([A-E][.)])\s+/gi, '\n$1 ');
+      const cleanedQuestion = rawQuestion.replace(/(?<!\n)\s+([A-E][.)]|[1-5][.)])\s+/gi, '\n$1 ');
       const lines = cleanedQuestion.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
-      const optionRegex = /^[-*]?\s*[A-E][.)]\s*/i;
+      const optionRegex = /^[-*]?\s*([A-E][.)]|[1-5][.)])\s*/i;
       for (const line of lines) {
         if (optionRegex.test(line)) {
           options.push(line);
@@ -64,14 +64,17 @@ const processWorkbook = (workbook) => {
 
     let correctLetter = row[correctKey] ? row[correctKey].toString().trim().toUpperCase() : null;
     
-    // Clean up the correct letter (e.g., if it says "C" or "C. something")
+    // Clean up the correct letter (e.g., if it says "C" or "C. something" or "1 - answer text")
     if (correctLetter && correctLetter.length > 1) {
-      const match = correctLetter.match(/^[A-E]/i);
+      const match = correctLetter.match(/^([A-E]|[1-5])/i);
       if (match) correctLetter = match[0].toUpperCase();
     }
 
-    // Map the correct letter to the full option text
-    const correctAnswerIndex = options.findIndex(opt => opt.toUpperCase().startsWith(correctLetter));
+    // Map the correct letter/number to the full option text
+    const correctAnswerIndex = options.findIndex(opt => {
+      const optUpper = opt.toUpperCase();
+      return optUpper.startsWith(correctLetter + '.') || optUpper.startsWith(correctLetter + ')');
+    });
     const correctAnswerText = correctAnswerIndex !== -1 ? options[correctAnswerIndex] : (correctLetter || "Unknown");
 
     // Defensive guard: skip questions whose correct answer cannot be matched to any option.
