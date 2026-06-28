@@ -102,99 +102,49 @@ const processWorkbook = (workbook) => {
           .map(word => word.charAt(0).toUpperCase() + word.slice(1))
           .join(' ');
           
-        // Merge similar topics
-        if (cleanTopic.includes('Emergency') || cleanTopic.includes('Disaster')) {
-          cleanTopic = 'Emergency Management & Preparedness';
-        } else if (cleanTopic.includes('Employee Substance')) {
-          cleanTopic = 'Employee Substance Abuse';
-        } else if (cleanTopic.includes('Environmental') || cleanTopic === 'Epa' || cleanTopic.includes('Domain 7') || cleanTopic.includes('Community Exposure')) {
-          cleanTopic = 'Environmental Management';
-        } else if (cleanTopic.includes('Ethics') || cleanTopic.includes('Law') || cleanTopic.includes('Legal') || cleanTopic.includes('Liability') || cleanTopic.includes('Product Liability')) {
-          cleanTopic = 'Ethics & Law';
-        } else if (cleanTopic.includes('Hierarchy Of Control')) {
-          cleanTopic = 'Hierarchy Of Control';
-        } else if (cleanTopic.includes('Ladder') || cleanTopic.includes('Stair')) {
-          cleanTopic = 'Ladder & Stair Safety';
-        } else if (cleanTopic.includes('Risk')) {
-          cleanTopic = 'Risk Management';
-        } else if (cleanTopic.includes('Safety Management') || cleanTopic === 'Management' || cleanTopic.includes('Management System') || cleanTopic.includes('Management/Organization') || cleanTopic.includes('Advance Safety') || cleanTopic.includes('Safety Concept') || cleanTopic === 'Safety') {
-          cleanTopic = 'Safety Management';
-        } else if (cleanTopic.includes('Scaffold') || cleanTopic.includes('Aerial Platform')) {
-          cleanTopic = 'Scaffold & Aerial Platforms';
-        } else if (cleanTopic.includes('Math') || cleanTopic.includes('Statistic') || cleanTopic.includes('Probability') || cleanTopic.includes('Trigonometry') || cleanTopic.includes('Engineering Econom') || cleanTopic.includes('Engineering') || cleanTopic === 'Engineering') {
-          cleanTopic = 'Math & Statistics';
-        } else if (cleanTopic.includes('Confined Space')) {
-          cleanTopic = 'Confined Space';
-        } else if (cleanTopic.includes('Electric')) {
-          cleanTopic = 'Electrical Safety';
+        // Merge topics according to ASP/CSP Blueprint (9 domains)
+        if (cleanTopic.includes('Safety Management') || cleanTopic.includes('Management System') || cleanTopic.includes('Management/Organization') || cleanTopic.includes('Advance Safety') || cleanTopic.includes('Safety Concept') || cleanTopic === 'Safety' || cleanTopic === 'General' || cleanTopic.includes('General Safety') || cleanTopic.includes('Safety Concepts') || cleanTopic.includes('Study') || cleanTopic.includes('Bcsp') || cleanTopic.includes('Asp Span') || cleanTopic.includes('Flashcards')) {
+          cleanTopic = '1. Safety Management';
+        } else if (cleanTopic.includes('Risk') || cleanTopic.includes('Loss Prevention') || cleanTopic.includes('Reliability') || cleanTopic.includes('Process Safety') || cleanTopic.includes('Insurance') || cleanTopic.includes('Finance')) {
+          cleanTopic = '2. Risk Management';
+        } else if (cleanTopic.includes('Industrial Hygiene') || cleanTopic.includes('Employee Exposures') || cleanTopic.includes('Occupational Health') || cleanTopic.includes('Ergonomic') || cleanTopic.includes('PPE') || cleanTopic.includes('Personal Protective') || cleanTopic.includes('Hearing') || cleanTopic.includes('Noise') || cleanTopic.includes('Heat') || cleanTopic.includes('Thermal') || cleanTopic.includes('Cold') || cleanTopic.includes('Relative Humidity') || cleanTopic.includes('Radiation') || cleanTopic.includes('Non-Ionizing') || cleanTopic.includes('Ventilation') || cleanTopic.includes('Indoor Air') || cleanTopic.includes('Toxicology') || cleanTopic.includes('Biohazard') || cleanTopic.includes('Bloodborne') || cleanTopic.includes('Respiratory') || cleanTopic.includes('Hazardous') || cleanTopic.includes('Hazard Communication') || cleanTopic.includes('Hazard Identification') || cleanTopic.includes('Asbestos') || cleanTopic.includes('Air Sampling') || cleanTopic.includes('Chemistry') || cleanTopic.includes('Gas Laws') || cleanTopic.includes('Confined Space') || cleanTopic.includes('Machine') || cleanTopic.includes('Lockout') || cleanTopic.includes('Lock Out') || cleanTopic.includes('Electrical') || cleanTopic.includes('Electric')) {
+          cleanTopic = '3. Industrial Hygiene & Safety Controls';
         } else if (cleanTopic.includes('Fire') || cleanTopic.includes('Fire Prevention') || cleanTopic.includes('Fire Protection') || cleanTopic.includes('Fire Safety')) {
-          cleanTopic = 'Fire Safety & Protection';
-        } else if (cleanTopic.includes('Hydraulic') || cleanTopic.includes('Hydrostatic')) {
-          cleanTopic = 'Hydraulics';
-        } else if (cleanTopic.includes('Machine') || cleanTopic.includes('Machine Guarding') || cleanTopic.includes('Machine Safety') || cleanTopic.includes('Lockout') || cleanTopic.includes('Lock Out')) {
-          cleanTopic = 'Machine Safety';
-        } else if (cleanTopic === 'Ppe' || cleanTopic === 'Personal Protective Equipment') {
-          cleanTopic = 'PPE';
-        } else if (cleanTopic.includes('Training') || cleanTopic.includes('Trainee') || cleanTopic.includes('Needs Assessment') || cleanTopic.includes('Course Evaluation')) {
-          cleanTopic = 'Training & Evaluation';
-        } else if (cleanTopic.includes('Hearing') || cleanTopic.includes('Noise')) {
-          cleanTopic = 'Hearing & Noise';
-        } else if (cleanTopic.includes('Heat') || cleanTopic.includes('Thermal') || cleanTopic.includes('Cold') || cleanTopic.includes('Relative Humidity')) {
-          cleanTopic = 'Heat & Thermal Stress';
-        } else if (cleanTopic.includes('Radiation') || cleanTopic.includes('Non-Ionizing') || cleanTopic.includes('Non-ionizing')) {
-          cleanTopic = 'Radiation';
-        } else if (cleanTopic.includes('Ventilation') || cleanTopic.includes('Indoor Air')) {
-          cleanTopic = 'Ventilation';
-        } else if (cleanTopic.includes('Hazardous') || cleanTopic.includes('Hazmat')) {
-          cleanTopic = 'Hazardous Materials';
-        } else if (cleanTopic.includes('Hazard Communication') || cleanTopic.includes('Hazard Identification')) {
-          cleanTopic = 'Hazard Communication';
-        } else if (cleanTopic.includes('Respiratory')) {
-          cleanTopic = 'Respiratory Protection';
-        } else if (cleanTopic.includes('Toxicology') || cleanTopic.includes('Biohazard') || cleanTopic.includes('Bloodborne')) {
-          cleanTopic = 'Toxicology & Biohazards';
+          cleanTopic = '4. Fire Prevention & Protection';
+        } else if (cleanTopic.includes('Environmental') || cleanTopic.includes('EPA') || cleanTopic.includes('Domain 7') || cleanTopic.includes('Community Exposure')) {
+          cleanTopic = '5. Environmental Management';
+        } else if (cleanTopic.includes('Emergency') || cleanTopic.includes('Disaster')) {
+          cleanTopic = '6. Emergency Management';
         } else if (cleanTopic.includes('Ergonomic')) {
-          cleanTopic = 'Ergonomics';
-        } else if (cleanTopic.includes('Industrial Hygiene') || cleanTopic.includes('Employee Exposures') || cleanTopic.includes('Occupational Health')) {
-          cleanTopic = 'Industrial Hygiene';
-        } else if (cleanTopic.includes('Physics') || cleanTopic.includes('Mechanics')) {
-          cleanTopic = 'Physics';
-        } else if (cleanTopic.includes('Chemistry') || cleanTopic.includes('Gas Laws')) {
-          cleanTopic = 'Chemistry';
-        } else if (cleanTopic.includes('Science') || cleanTopic.includes('Basic Science')) {
-          cleanTopic = 'Science';
+          cleanTopic = '7. Ergonomics';
+        } else if (cleanTopic.includes('Math') || cleanTopic.includes('Statistic') || cleanTopic.includes('Probability') || cleanTopic.includes('Trigonometry') || cleanTopic.includes('Engineering') || cleanTopic.includes('Physics') || cleanTopic.includes('Mechanics') || cleanTopic.includes('Science') || cleanTopic.includes('Basic Science')) {
+          cleanTopic = '8. Math & Science';
+        } else if (cleanTopic.includes('Ethics') || cleanTopic.includes('Law') || cleanTopic.includes('Legal') || cleanTopic.includes('Liability') || cleanTopic.includes('Product Liability')) {
+          cleanTopic = '9. Law, Ethics & Professional Conduct';
         } else if (cleanTopic.includes('Construction')) {
-          cleanTopic = 'Construction Safety';
+          cleanTopic = '3. Industrial Hygiene & Safety Controls';
         } else if (cleanTopic.includes('Fall')) {
-          cleanTopic = 'Fall Protection';
-        } else if (cleanTopic.includes('Process Safety')) {
-          cleanTopic = 'Process Safety';
-        } else if (cleanTopic.includes('Insurance') || cleanTopic.includes('Finance')) {
-          cleanTopic = 'Finance & Insurance';
-        } else if (cleanTopic.includes('Security') || cleanTopic.includes('Workplace Violence')) {
-          cleanTopic = 'Security';
-        } else if (cleanTopic.includes('Communication')) {
-          cleanTopic = 'Communication';
+          cleanTopic = '3. Industrial Hygiene & Safety Controls';
+        } else if (cleanTopic.includes('Scaffold') || cleanTopic.includes('Aerial Platform')) {
+          cleanTopic = '3. Industrial Hygiene & Safety Controls';
+        } else if (cleanTopic.includes('Ladder') || cleanTopic.includes('Stair')) {
+          cleanTopic = '3. Industrial Hygiene & Safety Controls';
         } else if (cleanTopic.includes('Transportation') || cleanTopic.includes('Fleet')) {
-          cleanTopic = 'Transportation & Fleet Safety';
+          cleanTopic = '2. Risk Management';
+        } else if (cleanTopic.includes('Security') || cleanTopic.includes('Workplace Violence')) {
+          cleanTopic = '6. Emergency Management';
+        } else if (cleanTopic.includes('Communication')) {
+          cleanTopic = '1. Safety Management';
         } else if (cleanTopic.includes('Material') || cleanTopic.includes('Storage')) {
-          cleanTopic = 'Material Handling & Storage';
-        } else if (cleanTopic.includes('Loss Prevention') || cleanTopic.includes('Reliability')) {
-          cleanTopic = 'Loss Prevention & Reliability';
-        } else if (cleanTopic.includes('Work Environment') || cleanTopic.includes('Visual Environment')) {
-          cleanTopic = 'Work Environments';
-        } else if (cleanTopic.includes('Study')) {
-          cleanTopic = 'Study Habits';
-        } else if (cleanTopic.includes('Facility') || cleanTopic.includes('Facility Design') || cleanTopic.includes('Facility Planning')) {
-          cleanTopic = 'Facility Planning & Design';
-        } else if (cleanTopic.includes('General') || cleanTopic.includes('General Safety')) {
-          cleanTopic = 'General Safety';
-        } else if (cleanTopic.includes('System Safety') || cleanTopic.includes('Systems Safety')) {
-          cleanTopic = 'System Safety';
-        } else if (cleanTopic.includes('Asbestos') || cleanTopic.includes('Air Sampling')) {
-          cleanTopic = 'Asbestos & Air Sampling';
-        } else if (cleanTopic.includes('Bcsp') || cleanTopic.includes('Asp Span')) {
-          cleanTopic = 'BCSP Exam Prep';
+          cleanTopic = '3. Industrial Hygiene & Safety Controls';
+        } else if (cleanTopic.includes('Facility') || cleanTopic.includes('Work Environment') || cleanTopic.includes('Visual Environment')) {
+          cleanTopic = '7. Ergonomics';
+        } else if (cleanTopic.includes('Hydraulic') || cleanTopic.includes('Hydrostatic')) {
+          cleanTopic = '8. Math & Science';
+        } else if (cleanTopic.includes('Training')) {
+          cleanTopic = '1. Safety Management';
+        } else {
+          cleanTopic = '1. Safety Management'; // Default
         }
         
         // Safety net for dirty data strings (e.g. formula copy paste)
@@ -202,12 +152,7 @@ const processWorkbook = (workbook) => {
           cleanTopic = 'General';
         }
         
-        // Fix Acronyms (e.g. Ppe -> PPE)
-        cleanTopic = cleanTopic
-          .replace(/\bPpe\b/g, 'PPE')
-          .replace(/\bDot\b/g, 'DOT')
-          .replace(/\bIso\b/g, 'ISO')
-          .replace(/\bGhs\b/g, 'GHS');
+        // No acronym fixes needed for blueprint domains
 
         finalTopic = cleanTopic;
       }
