@@ -107,9 +107,9 @@ const processWorkbook = (workbook) => {
           cleanTopic = 'Emergency Management & Preparedness';
         } else if (cleanTopic.includes('Employee Substance')) {
           cleanTopic = 'Employee Substance Abuse';
-        } else if (cleanTopic.includes('Environmental') || cleanTopic === 'Epa') {
-          cleanTopic = 'Environmental & EPA';
-        } else if (cleanTopic.includes('Ethics') || cleanTopic.includes('Law')) {
+        } else if (cleanTopic.includes('Environmental') || cleanTopic === 'Epa' || cleanTopic.includes('Domain 7')) {
+          cleanTopic = 'Environmental Management';
+        } else if (cleanTopic.includes('Ethics') || cleanTopic.includes('Law') || cleanTopic.includes('Legal') || cleanTopic.includes('Liability') || cleanTopic.includes('Product Liability')) {
           cleanTopic = 'Ethics & Law';
         } else if (cleanTopic.includes('Hierarchy Of Control')) {
           cleanTopic = 'Hierarchy Of Control';
@@ -117,32 +117,76 @@ const processWorkbook = (workbook) => {
           cleanTopic = 'Ladder & Stair Safety';
         } else if (cleanTopic.includes('Risk')) {
           cleanTopic = 'Risk Management';
-        } else if (cleanTopic.includes('Safety Management') || cleanTopic === 'Management') {
+        } else if (cleanTopic.includes('Safety Management') || cleanTopic === 'Management' || cleanTopic.includes('Management System') || cleanTopic.includes('Management/Organization')) {
           cleanTopic = 'Safety Management';
         } else if (cleanTopic.includes('Scaffold') || cleanTopic.includes('Aerial Platform')) {
           cleanTopic = 'Scaffold & Aerial Platforms';
-        } else if (cleanTopic.includes('Math') || cleanTopic.includes('Statistic') || cleanTopic.includes('Probability') || cleanTopic.includes('Trigonometry')) {
+        } else if (cleanTopic.includes('Math') || cleanTopic.includes('Statistic') || cleanTopic.includes('Probability') || cleanTopic.includes('Trigonometry') || cleanTopic.includes('Engineering Econom') || cleanTopic === 'Engineering') {
           cleanTopic = 'Math & Statistics';
         } else if (cleanTopic.includes('Confined Space')) {
           cleanTopic = 'Confined Space';
         } else if (cleanTopic.includes('Electric')) {
           cleanTopic = 'Electrical Safety';
-        } else if (cleanTopic.includes('Engineering Econom') || cleanTopic === 'Engineering Economy') {
-          cleanTopic = 'Math & Statistics';
-        } else if (cleanTopic === 'Engineering') {
-          cleanTopic = 'Math & Statistics';
-        } else if (cleanTopic.includes('Fire')) {
-          cleanTopic = 'Fire Safety & Prevention';
-        } else if (cleanTopic.includes('Hydraulic')) {
+        } else if (cleanTopic.includes('Fire') || cleanTopic.includes('Fire Prevention') || cleanTopic.includes('Fire Protection') || cleanTopic.includes('Fire Safety')) {
+          cleanTopic = 'Fire Safety & Protection';
+        } else if (cleanTopic.includes('Hydraulic') || cleanTopic.includes('Hydrostatic')) {
           cleanTopic = 'Hydraulics';
-        } else if (cleanTopic.includes('Machine Guarding') || cleanTopic.includes('Machine Safety')) {
-          cleanTopic = 'Machine Guarding';
+        } else if (cleanTopic.includes('Machine') || cleanTopic.includes('Machine Guarding') || cleanTopic.includes('Machine Safety') || cleanTopic.includes('Lockout') || cleanTopic.includes('Lock Out')) {
+          cleanTopic = 'Machine Safety';
         } else if (cleanTopic === 'Ppe' || cleanTopic === 'Personal Protective Equipment') {
-          cleanTopic = 'Personal Protective Equipment';
-        } else if (cleanTopic.includes('Liability')) {
-          cleanTopic = 'Liability';
-        } else if (['Training', 'Trainee Evaluation', 'Needs Assessment', 'Course Evaluation'].includes(cleanTopic)) {
+          cleanTopic = 'PPE';
+        } else if (cleanTopic.includes('Training') || cleanTopic.includes('Trainee') || cleanTopic.includes('Needs Assessment') || cleanTopic.includes('Course Evaluation')) {
           cleanTopic = 'Training & Evaluation';
+        } else if (cleanTopic.includes('Hearing') || cleanTopic.includes('Noise')) {
+          cleanTopic = 'Hearing & Noise';
+        } else if (cleanTopic.includes('Heat') || cleanTopic.includes('Thermal') || cleanTopic.includes('Cold')) {
+          cleanTopic = 'Heat & Thermal Stress';
+        } else if (cleanTopic.includes('Radiation') || cleanTopic.includes('Non-Ionizing') || cleanTopic.includes('Non-ionizing')) {
+          cleanTopic = 'Radiation';
+        } else if (cleanTopic.includes('Ventilation') || cleanTopic.includes('Indoor Air')) {
+          cleanTopic = 'Ventilation';
+        } else if (cleanTopic.includes('Hazardous') || cleanTopic.includes('Hazmat')) {
+          cleanTopic = 'Hazardous Materials';
+        } else if (cleanTopic.includes('Hazard Communication') || cleanTopic.includes('Hazard Identification')) {
+          cleanTopic = 'Hazard Communication';
+        } else if (cleanTopic.includes('Respiratory')) {
+          cleanTopic = 'Respiratory Protection';
+        } else if (cleanTopic.includes('Toxicology') || cleanTopic.includes('Biohazard') || cleanTopic.includes('Bloodborne')) {
+          cleanTopic = 'Toxicology & Biohazards';
+        } else if (cleanTopic.includes('Ergonomic')) {
+          cleanTopic = 'Ergonomics';
+        } else if (cleanTopic.includes('Industrial Hygiene') || cleanTopic.includes('Employee Exposures')) {
+          cleanTopic = 'Industrial Hygiene';
+        } else if (cleanTopic.includes('Physics') || cleanTopic.includes('Mechanics')) {
+          cleanTopic = 'Physics';
+        } else if (cleanTopic.includes('Chemistry') || cleanTopic.includes('Gas Laws')) {
+          cleanTopic = 'Chemistry';
+        } else if (cleanTopic.includes('Science') || cleanTopic.includes('Basic Science')) {
+          cleanTopic = 'Science';
+        } else if (cleanTopic.includes('Construction')) {
+          cleanTopic = 'Construction Safety';
+        } else if (cleanTopic.includes('Fall')) {
+          cleanTopic = 'Fall Protection';
+        } else if (cleanTopic.includes('Process Safety')) {
+          cleanTopic = 'Process Safety';
+        } else if (cleanTopic.includes('Insurance') || cleanTopic.includes('Finance')) {
+          cleanTopic = 'Finance & Insurance';
+        } else if (cleanTopic.includes('Security') || cleanTopic.includes('Workplace Violence')) {
+          cleanTopic = 'Security';
+        } else if (cleanTopic.includes('Communication')) {
+          cleanTopic = 'Communication';
+        } else if (cleanTopic.includes('Transportation') || cleanTopic.includes('Fleet')) {
+          cleanTopic = 'Transportation & Fleet Safety';
+        } else if (cleanTopic.includes('Material') || cleanTopic.includes('Storage')) {
+          cleanTopic = 'Material Handling & Storage';
+        } else if (cleanTopic.includes('Loss Prevention') || cleanTopic.includes('Reliability')) {
+          cleanTopic = 'Loss Prevention & Reliability';
+        } else if (cleanTopic.includes('Work Environment') || cleanTopic.includes('Visual Environment')) {
+          cleanTopic = 'Work Environments';
+        } else if (cleanTopic.includes('Study')) {
+          cleanTopic = 'Study Habits';
+        } else if (cleanTopic.includes('Ppe') || cleanTopic.includes('Personal Protective')) {
+          cleanTopic = 'PPE';
         }
         
         // Safety net for dirty data strings (e.g. formula copy paste)
