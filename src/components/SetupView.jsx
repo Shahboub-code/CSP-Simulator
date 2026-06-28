@@ -255,7 +255,7 @@ const SetupView = ({ onDataLoaded }) => {
                     <div className="grid grid-cols-1 gap-6 max-w-4xl mx-auto mb-12">
                       {/* Option ASP Exam */}
                       <button
-                        onClick={() => startExam(200, 114, 'ASP Exam')}
+                        onClick={() => startExam(parsedBank.length, 114, 'ASP Exam')}
                         disabled={parsedBank.length < 1}
                         className="group relative flex flex-col md:flex-row items-center md:items-start lg:items-center p-6 md:p-8 bg-gradient-to-br from-indigo-600 to-blue-700 rounded-3xl hover:shadow-2xl hover:shadow-indigo-500/30 transition-all duration-300 text-left disabled:opacity-50 overflow-hidden w-full"
                       >
@@ -268,7 +268,7 @@ const SetupView = ({ onDataLoaded }) => {
                         <div className="flex-grow flex flex-col items-center md:items-start text-center md:text-left z-10">
                           <h4 className="text-3xl font-extrabold text-white mb-2">ASP Exam Simulator</h4>
                           <p className="text-indigo-100 text-lg">
-                            {parsedBank.length >= 200 ? '200 questions' : `All ${parsedBank.length} questions`} • Passing score: 114 correct
+                            All {parsedBank.length} questions • Passing score: 114 correct
                           </p>
                         </div>
 
@@ -279,7 +279,7 @@ const SetupView = ({ onDataLoaded }) => {
 
                       {/* Option CSP Exam */}
                       <button
-                        onClick={() => startExam(200, 110, 'CSP Exam')}
+                        onClick={() => startExam(parsedBank.length, 110, 'CSP Exam')}
                         disabled={parsedBank.length < 1}
                         className="group relative flex flex-col md:flex-row items-center md:items-start lg:items-center p-6 md:p-8 bg-gradient-to-br from-emerald-600 to-teal-700 rounded-3xl hover:shadow-2xl hover:shadow-emerald-500/30 transition-all duration-300 text-left disabled:opacity-50 overflow-hidden w-full"
                       >
@@ -292,7 +292,7 @@ const SetupView = ({ onDataLoaded }) => {
                         <div className="flex-grow flex flex-col items-center md:items-start text-center md:text-left z-10">
                           <h4 className="text-3xl font-extrabold text-white mb-2">CSP Exam Simulator</h4>
                           <p className="text-emerald-100 text-lg">
-                            {parsedBank.length >= 200 ? '200 questions' : `All ${parsedBank.length} questions`} • Passing score: 110 correct
+                            All {parsedBank.length} questions • Passing score: 110 correct
                           </p>
                         </div>
 
