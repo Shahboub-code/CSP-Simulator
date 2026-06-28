@@ -1,9 +1,7 @@
 import { useState, useEffect, useRef, memo, useCallback, useMemo } from 'react';
 import OptionCard from './OptionCard';
-import { Flag, LayoutGrid, Sparkles, Key } from 'lucide-react';
+import { Flag, LayoutGrid } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { generateExplanation, getCachedExplanation, setCachedExplanation, getApiKey } from '../utils/explanationGenerator';
-import ApiKeyModal from './ApiKeyModal';
 
 const GridButton = memo(({ idx, isAnswered, isFlagged, isCurrent, onJumpTo }) => {
   let btnClass = "w-10 h-10 rounded-md font-medium text-sm flex flex-col items-center justify-center border-2 transition-all relative overflow-hidden ";
@@ -67,14 +65,10 @@ const QuizView = memo(({
 }) => {
   const [showGrid, setShowGrid] = useState(false);
   const [suspenseActive, setSuspenseActive] = useState(false);
-  const [generatedExplanation, setGeneratedExplanation] = useState(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [showApiKeyModal, setShowApiKeyModal] = useState(false);
   const suspenseTimerRef = useRef(null);
   
   useEffect(() => {
     setSuspenseActive(false);
-    setGeneratedExplanation(null);
     if (suspenseTimerRef.current) {
       clearTimeout(suspenseTimerRef.current);
     }
@@ -90,46 +84,9 @@ const QuizView = memo(({
     }, 2000);
   }, [selectedAnswer, onSelectOption]);
 
-  const handleGenerateExplanation = useCallback(async () => {
-    const apiKey = getApiKey();
-    if (!apiKey) {
-      setShowApiKeyModal(true);
-      return;
-    }
-
-    const cached = getCachedExplanation(question.text, question.correctAnswer);
-    if (cached) {
-      setGeneratedExplanation(cached);
-      return;
-    }
-
-    setIsGenerating(true);
-    try {
-      const explanation = await generateExplanation(
-        question.text,
-        question.options,
-        question.correctAnswer,
-        apiKey
-      );
-      setGeneratedExplanation(explanation);
-      setCachedExplanation(question.text, question.correctAnswer, explanation);
-    } catch (error) {
-      console.error('Failed to generate explanation:', error);
-      setGeneratedExplanation('Failed to generate explanation. Please check your API key.');
-    } finally {
-      setIsGenerating(false);
-    }
-  }, [question]);
-
-  const handleApiKeySave = useCallback(() => {
-    handleGenerateExplanation();
-  }, [handleGenerateExplanation]);
-
   if (!question) return null;
 
   const isLast = currentIndex === total - 1;
-  const hasExplanation = question.explanation && question.explanation.trim().length > 0;
-  const showExplanation = hasExplanation || generatedExplanation;
 
   return (
     <div className="max-w-4xl mx-auto mt-4">
@@ -206,7 +163,7 @@ const QuizView = memo(({
             })}
           </div>
 
-          {selectedAnswer && !suspenseActive && showExplanation && (
+          {selectedAnswer && !suspenseActive && question.explanation && (
             <motion.div 
               initial={{ opacity: 0, scaleY: 0.95 }}
               animate={{ opacity: 1, scaleY: 1 }}
@@ -215,49 +172,11 @@ const QuizView = memo(({
               className="mb-8"
             >
               <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 rounded-xl p-5">
-                <div className="flex items-center justify-between mb-2">
-                  <h5 className="text-sm font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400">
-                    {hasExplanation ? 'Explanation' : 'AI-Generated Explanation'}
-                  </h5>
-                  {generatedExplanation && (
-                    <span className="text-xs px-2 py-0.5 rounded bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300">
-                      AI
-                    </span>
-                  )}
-                </div>
+                <h5 className="text-sm font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400 mb-2">Explanation</h5>
                 <p className="text-gray-700 dark:text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">
-                  {hasExplanation ? question.explanation : generatedExplanation}
+                  {question.explanation}
                 </p>
               </div>
-            </motion.div>
-          )}
-
-          {selectedAnswer && !suspenseActive && !showExplanation && (
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="mb-8"
-            >
-              <button
-                onClick={handleGenerateExplanation}
-                disabled={isGenerating}
-                className="w-full px-4 py-3 rounded-xl border-2 border-dashed border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-900/10 text-purple-600 dark:text-purple-400 font-medium hover:bg-purple-100 dark:hover:bg-purple-900/20 transition-colors disabled:opacity-50"
-              >
-                {isGenerating ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </svg>
-                    Generating Explanation...
-                  </span>
-                ) : (
-                  <span className="flex items-center justify-center gap-2">
-                    <Sparkles className="w-4 h-4" />
-                    Generate AI Explanation
-                  </span>
-                )}
-              </button>
             </motion.div>
           )}
 
@@ -277,13 +196,6 @@ const QuizView = memo(({
         </button>
 
         <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
-          <button
-            onClick={() => setShowApiKeyModal(true)}
-            className="w-full sm:w-auto px-3 py-3 sm:py-2.5 rounded-lg font-medium text-slate-gray dark:text-slate-400 border border-gray-200 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
-            title="Set API Key for AI Explanations"
-          >
-            <Key className="w-4 h-4" />
-          </button>
           {!isLast && (
             <button
               onClick={onFinish}
@@ -303,12 +215,6 @@ const QuizView = memo(({
           </button>
         </div>
       </div>
-
-      <ApiKeyModal 
-        isOpen={showApiKeyModal}
-        onClose={() => setShowApiKeyModal(false)}
-        onSave={handleApiKeySave}
-      />
     </div>
   );
 });
