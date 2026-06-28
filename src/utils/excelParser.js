@@ -107,7 +107,7 @@ const processWorkbook = (workbook) => {
           cleanTopic = 'Emergency Management & Preparedness';
         } else if (cleanTopic.includes('Employee Substance')) {
           cleanTopic = 'Employee Substance Abuse';
-        } else if (cleanTopic.includes('Environmental') || cleanTopic === 'Epa' || cleanTopic.includes('Domain 7')) {
+        } else if (cleanTopic.includes('Environmental') || cleanTopic === 'Epa' || cleanTopic.includes('Domain 7') || cleanTopic.includes('Community Exposure')) {
           cleanTopic = 'Environmental Management';
         } else if (cleanTopic.includes('Ethics') || cleanTopic.includes('Law') || cleanTopic.includes('Legal') || cleanTopic.includes('Liability') || cleanTopic.includes('Product Liability')) {
           cleanTopic = 'Ethics & Law';
@@ -117,11 +117,11 @@ const processWorkbook = (workbook) => {
           cleanTopic = 'Ladder & Stair Safety';
         } else if (cleanTopic.includes('Risk')) {
           cleanTopic = 'Risk Management';
-        } else if (cleanTopic.includes('Safety Management') || cleanTopic === 'Management' || cleanTopic.includes('Management System') || cleanTopic.includes('Management/Organization')) {
+        } else if (cleanTopic.includes('Safety Management') || cleanTopic === 'Management' || cleanTopic.includes('Management System') || cleanTopic.includes('Management/Organization') || cleanTopic.includes('Advance Safety') || cleanTopic.includes('Safety Concept') || cleanTopic === 'Safety') {
           cleanTopic = 'Safety Management';
         } else if (cleanTopic.includes('Scaffold') || cleanTopic.includes('Aerial Platform')) {
           cleanTopic = 'Scaffold & Aerial Platforms';
-        } else if (cleanTopic.includes('Math') || cleanTopic.includes('Statistic') || cleanTopic.includes('Probability') || cleanTopic.includes('Trigonometry') || cleanTopic.includes('Engineering Econom') || cleanTopic === 'Engineering') {
+        } else if (cleanTopic.includes('Math') || cleanTopic.includes('Statistic') || cleanTopic.includes('Probability') || cleanTopic.includes('Trigonometry') || cleanTopic.includes('Engineering Econom') || cleanTopic.includes('Engineering') || cleanTopic === 'Engineering') {
           cleanTopic = 'Math & Statistics';
         } else if (cleanTopic.includes('Confined Space')) {
           cleanTopic = 'Confined Space';
@@ -139,7 +139,7 @@ const processWorkbook = (workbook) => {
           cleanTopic = 'Training & Evaluation';
         } else if (cleanTopic.includes('Hearing') || cleanTopic.includes('Noise')) {
           cleanTopic = 'Hearing & Noise';
-        } else if (cleanTopic.includes('Heat') || cleanTopic.includes('Thermal') || cleanTopic.includes('Cold')) {
+        } else if (cleanTopic.includes('Heat') || cleanTopic.includes('Thermal') || cleanTopic.includes('Cold') || cleanTopic.includes('Relative Humidity')) {
           cleanTopic = 'Heat & Thermal Stress';
         } else if (cleanTopic.includes('Radiation') || cleanTopic.includes('Non-Ionizing') || cleanTopic.includes('Non-ionizing')) {
           cleanTopic = 'Radiation';
@@ -155,7 +155,7 @@ const processWorkbook = (workbook) => {
           cleanTopic = 'Toxicology & Biohazards';
         } else if (cleanTopic.includes('Ergonomic')) {
           cleanTopic = 'Ergonomics';
-        } else if (cleanTopic.includes('Industrial Hygiene') || cleanTopic.includes('Employee Exposures')) {
+        } else if (cleanTopic.includes('Industrial Hygiene') || cleanTopic.includes('Employee Exposures') || cleanTopic.includes('Occupational Health')) {
           cleanTopic = 'Industrial Hygiene';
         } else if (cleanTopic.includes('Physics') || cleanTopic.includes('Mechanics')) {
           cleanTopic = 'Physics';
@@ -185,8 +185,16 @@ const processWorkbook = (workbook) => {
           cleanTopic = 'Work Environments';
         } else if (cleanTopic.includes('Study')) {
           cleanTopic = 'Study Habits';
-        } else if (cleanTopic.includes('Ppe') || cleanTopic.includes('Personal Protective')) {
-          cleanTopic = 'PPE';
+        } else if (cleanTopic.includes('Facility') || cleanTopic.includes('Facility Design') || cleanTopic.includes('Facility Planning')) {
+          cleanTopic = 'Facility Planning & Design';
+        } else if (cleanTopic.includes('General') || cleanTopic.includes('General Safety')) {
+          cleanTopic = 'General Safety';
+        } else if (cleanTopic.includes('System Safety') || cleanTopic.includes('Systems Safety')) {
+          cleanTopic = 'System Safety';
+        } else if (cleanTopic.includes('Asbestos') || cleanTopic.includes('Air Sampling')) {
+          cleanTopic = 'Asbestos & Air Sampling';
+        } else if (cleanTopic.includes('Bcsp') || cleanTopic.includes('Asp Span')) {
+          cleanTopic = 'BCSP Exam Prep';
         }
         
         // Safety net for dirty data strings (e.g. formula copy paste)
