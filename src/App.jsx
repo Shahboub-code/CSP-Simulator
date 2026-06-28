@@ -1,9 +1,16 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense, useCallback, useMemo } from 'react';
 import Header from './components/Header';
-import SetupView from './components/SetupView';
-import QuizView from './components/QuizView';
-import ResultsView from './components/ResultsView';
 import ConfirmationModal from './components/ConfirmationModal';
+
+const SetupView = lazy(() => import('./components/SetupView'));
+const QuizView = lazy(() => import('./components/QuizView'));
+const ResultsView = lazy(() => import('./components/ResultsView'));
+
+const LoadingFallback = () => (
+  <div className="flex items-center justify-center py-24">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-safety-blue dark:border-cyan-400"></div>
+  </div>
+);
 
 function App() {
   const [view, setView] = useState('setup');
@@ -23,125 +30,130 @@ function App() {
     }
   }, [isDarkMode]);
 
-  const toggleDarkMode = () => setIsDarkMode(!isDarkMode);
+  const toggleDarkMode = useCallback(() => setIsDarkMode(prev => !prev), []);
 
   const [examConfig, setExamConfig] = useState({ requiredScore: null, examName: '' });
 
-  const handleDataLoaded = ({ questions, requiredScore, examName }) => {
+  const handleDataLoaded = useCallback(({ questions, requiredScore, examName }) => {
     setQuestions(questions);
     setExamConfig({ requiredScore, examName });
     setCurrentIndex(0);
     setAnswers({});
     setFlagged({});
     setView('quiz');
-  };
+  }, []);
 
-  const handleSelectOption = (option) => {
-    const currentQ = questions[currentIndex];
-    
-    // Don't do anything if already answered
-    if (answers[currentQ.id]) return;
-
-    setAnswers(prev => ({
-      ...prev,
-      [currentQ.id]: option
-    }));
-
-    // We have removed the auto-advance. 
-    // The user will now manually click the "Next Question" button when they are ready to move on.
-  };
-
-  const handleToggleFlag = () => {
-    const currentQ = questions[currentIndex];
-    setFlagged({
-      ...flagged,
-      [currentQ.id]: !flagged[currentQ.id]
+  const handleSelectOption = useCallback((option) => {
+    setQuestions(prev => {
+      const currentQ = prev[currentIndex];
+      if (!currentQ || answers[currentQ.id]) return prev;
+      setAnswers(prevAns => ({
+        ...prevAns,
+        [currentQ.id]: option
+      }));
+      return prev;
     });
-  };
+  }, [currentIndex, answers]);
 
-  const handleNext = () => {
-    if (currentIndex < questions.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      setConfirmModalType('submit');
-      setShowConfirmModal(true);
-    }
-  };
+  const handleToggleFlag = useCallback(() => {
+    setQuestions(prev => {
+      const currentQ = prev[currentIndex];
+      if (!currentQ) return prev;
+      setFlagged(prevFlag => ({
+        ...prevFlag,
+        [currentQ.id]: !prevFlag[currentQ.id]
+      }));
+      return prev;
+    });
+  }, [currentIndex]);
 
-  const handlePrevious = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    }
-  };
+  const handleNext = useCallback(() => {
+    setCurrentIndex(prev => {
+      if (prev < questions.length - 1) {
+        return prev + 1;
+      } else {
+        setConfirmModalType('submit');
+        setShowConfirmModal(true);
+        return prev;
+      }
+    });
+  }, [questions.length]);
 
-  const handleJumpTo = (index) => {
+  const handlePrevious = useCallback(() => {
+    setCurrentIndex(prev => prev > 0 ? prev - 1 : prev);
+  }, []);
+
+  const handleJumpTo = useCallback((index) => {
     setCurrentIndex(index);
-  };
+  }, []);
 
-  const handleFinishEarly = () => {
+  const handleFinishEarly = useCallback(() => {
     setConfirmModalType('endEarly');
     setShowConfirmModal(true);
-  };
+  }, []);
 
-  const confirmSubmit = () => {
+  const confirmSubmit = useCallback(() => {
     setShowConfirmModal(false);
     setView('results');
-  };
+  }, []);
 
-  const cancelSubmit = () => {
+  const cancelSubmit = useCallback(() => {
     setShowConfirmModal(false);
-  };
+  }, []);
 
-  const handleRestart = () => {
-    // Go back to setup so they can pick a new random set
+  const handleRestart = useCallback(() => {
     setView('setup');
     setQuestions([]);
-  };
+  }, []);
 
-  let progress = 0;
-  if (view === 'quiz' && questions.length > 0) {
-    progress = (Object.keys(answers).length / questions.length) * 100;
-  } else if (view === 'results') {
-    progress = 100;
-  }
+  const progress = useMemo(() => {
+    if (view === 'quiz' && questions.length > 0) {
+      return (Object.keys(answers).length / questions.length) * 100;
+    } else if (view === 'results') {
+      return 100;
+    }
+    return 0;
+  }, [view, questions.length, answers]);
 
   return (
     <div className="min-h-screen flex flex-col font-sans selection:bg-safety-blue/20 dark:selection:bg-safety-blue/40 transition-colors duration-300">
       <Header progress={progress} isDarkMode={isDarkMode} toggleDarkMode={toggleDarkMode} />
       
       <main className="flex-1 px-4 py-8">
-        {view === 'setup' && (
-          <SetupView onDataLoaded={handleDataLoaded} />
-        )}
-        
-        {view === 'quiz' && (
-          <QuizView 
-            question={questions[currentIndex]}
-            currentIndex={currentIndex}
-            total={questions.length}
-            selectedAnswer={answers[questions[currentIndex]?.id]}
-            isFlagged={flagged[questions[currentIndex]?.id]}
-            answers={answers}
-            flaggedMap={flagged}
-            questions={questions}
-            onSelectOption={handleSelectOption}
-            onToggleFlag={handleToggleFlag}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
-            onJumpTo={handleJumpTo}
-            onFinish={handleFinishEarly}
-          />
-        )}
-        
-        {view === 'results' && (
-          <ResultsView 
-            questions={questions}
-            answers={answers}
-            flaggedMap={flagged}
-            examConfig={examConfig}
-            onRestart={handleRestart}
-          />
-        )}
+        <Suspense fallback={<LoadingFallback />}>
+          {view === 'setup' && (
+            <SetupView onDataLoaded={handleDataLoaded} />
+          )}
+          
+          {view === 'quiz' && questions.length > 0 && (
+            <QuizView 
+              question={questions[currentIndex]}
+              currentIndex={currentIndex}
+              total={questions.length}
+              selectedAnswer={answers[questions[currentIndex]?.id]}
+              isFlagged={flagged[questions[currentIndex]?.id]}
+              answers={answers}
+              flaggedMap={flagged}
+              questions={questions}
+              onSelectOption={handleSelectOption}
+              onToggleFlag={handleToggleFlag}
+              onNext={handleNext}
+              onPrevious={handlePrevious}
+              onJumpTo={handleJumpTo}
+              onFinish={handleFinishEarly}
+            />
+          )}
+          
+          {view === 'results' && (
+            <ResultsView 
+              questions={questions}
+              answers={answers}
+              flaggedMap={flagged}
+              examConfig={examConfig}
+              onRestart={handleRestart}
+            />
+          )}
+        </Suspense>
       </main>
 
       <ConfirmationModal 
