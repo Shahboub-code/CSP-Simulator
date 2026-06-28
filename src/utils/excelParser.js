@@ -47,9 +47,9 @@ const processWorkbook = (workbook) => {
       if (optEKey && row[optEKey]) options.push(`E. ${row[optEKey]}`);
     } else {
       // Inline style: options are embedded in the question text.
-      const cleanedQuestion = rawQuestion.replace(/(?<!\n)\s+([A-E][.)]|[1-5][.)])\s+/gi, '\n$1 ');
+      const cleanedQuestion = rawQuestion.replace(/(?<!\n)\s+([A-E][.)]\s*|[1-5][.)]\s*|A:|B:|C:|D:|E:)\s*/gi, '\n$1 ');
       const lines = cleanedQuestion.split(/\r?\n/).map(l => l.trim()).filter(l => l.length > 0);
-      const optionRegex = /^[-*]?\s*([A-E][.)]|[1-5][.)])\s*/i;
+      const optionRegex = /^[-*]?\s*([A-E][.)]\s*|[1-5][.)]\s*|A:|B:|C:|D:|E:)\s*/i;
       for (const line of lines) {
         if (optionRegex.test(line)) {
           options.push(line);
@@ -72,8 +72,11 @@ const processWorkbook = (workbook) => {
 
     // Map the correct letter/number to the full option text
     const correctAnswerIndex = options.findIndex(opt => {
-      const optUpper = opt.toUpperCase();
-      return optUpper.startsWith(correctLetter + '.') || optUpper.startsWith(correctLetter + ')');
+      const optUpper = opt.toUpperCase().trim();
+      return optUpper.startsWith(correctLetter + '.') || 
+             optUpper.startsWith(correctLetter + ')') || 
+             optUpper.startsWith(correctLetter + ':') ||
+             optUpper.startsWith(correctLetter + ' ');
     });
     const correctAnswerText = correctAnswerIndex !== -1 ? options[correctAnswerIndex] : (correctLetter || "Unknown");
 
