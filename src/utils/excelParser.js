@@ -1,5 +1,7 @@
 import * as xlsx from 'xlsx';
 
+let defaultBankPromise;
+
 const processWorkbook = (workbook) => {
   // Use the first sheet
   const firstSheetName = workbook.SheetNames[0];
@@ -107,7 +109,7 @@ const processWorkbook = (workbook) => {
           cleanTopic = '1. Safety Management';
         } else if (cleanTopic.includes('Risk') || cleanTopic.includes('Loss Prevention') || cleanTopic.includes('Reliability') || cleanTopic.includes('Process Safety') || cleanTopic.includes('Insurance') || cleanTopic.includes('Finance')) {
           cleanTopic = '2. Risk Management';
-        } else if (cleanTopic.includes('Industrial Hygiene') || cleanTopic.includes('Employee Exposures') || cleanTopic.includes('Occupational Health') || cleanTopic.includes('Ergonomic') || cleanTopic.includes('PPE') || cleanTopic.includes('Personal Protective') || cleanTopic.includes('Hearing') || cleanTopic.includes('Noise') || cleanTopic.includes('Heat') || cleanTopic.includes('Thermal') || cleanTopic.includes('Cold') || cleanTopic.includes('Relative Humidity') || cleanTopic.includes('Radiation') || cleanTopic.includes('Non-Ionizing') || cleanTopic.includes('Ventilation') || cleanTopic.includes('Indoor Air') || cleanTopic.includes('Toxicology') || cleanTopic.includes('Biohazard') || cleanTopic.includes('Bloodborne') || cleanTopic.includes('Respiratory') || cleanTopic.includes('Hazardous') || cleanTopic.includes('Hazard Communication') || cleanTopic.includes('Hazard Identification') || cleanTopic.includes('Asbestos') || cleanTopic.includes('Air Sampling') || cleanTopic.includes('Chemistry') || cleanTopic.includes('Gas Laws') || cleanTopic.includes('Confined Space') || cleanTopic.includes('Machine') || cleanTopic.includes('Lockout') || cleanTopic.includes('Lock Out') || cleanTopic.includes('Electrical') || cleanTopic.includes('Electric')) {
+        } else if (cleanTopic.includes('Industrial Hygiene') || cleanTopic.includes('Employee Exposures') || cleanTopic.includes('Occupational Health') || cleanTopic.includes('PPE') || cleanTopic.includes('Personal Protective') || cleanTopic.includes('Hearing') || cleanTopic.includes('Noise') || cleanTopic.includes('Heat') || cleanTopic.includes('Thermal') || cleanTopic.includes('Cold') || cleanTopic.includes('Relative Humidity') || cleanTopic.includes('Radiation') || cleanTopic.includes('Non-Ionizing') || cleanTopic.includes('Ventilation') || cleanTopic.includes('Indoor Air') || cleanTopic.includes('Toxicology') || cleanTopic.includes('Biohazard') || cleanTopic.includes('Bloodborne') || cleanTopic.includes('Respiratory') || cleanTopic.includes('Hazardous') || cleanTopic.includes('Hazard Communication') || cleanTopic.includes('Hazard Identification') || cleanTopic.includes('Asbestos') || cleanTopic.includes('Air Sampling') || cleanTopic.includes('Chemistry') || cleanTopic.includes('Gas Laws') || cleanTopic.includes('Confined Space') || cleanTopic.includes('Machine') || cleanTopic.includes('Lockout') || cleanTopic.includes('Lock Out') || cleanTopic.includes('Electrical') || cleanTopic.includes('Electric')) {
           cleanTopic = '3. Industrial Hygiene & Safety Controls';
         } else if (cleanTopic.includes('Fire') || cleanTopic.includes('Fire Prevention') || cleanTopic.includes('Fire Protection') || cleanTopic.includes('Fire Safety')) {
           cleanTopic = '4. Fire Prevention & Protection';
@@ -211,17 +213,21 @@ export const parseExcelFile = (file) => {
 };
 
 export const loadDefaultBank = async () => {
-  try {
-    const response = await fetch(`${import.meta.env.BASE_URL}Exams2.xlsx`);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch default bank: ${response.statusText}`);
-    }
-    const arrayBuffer = await response.arrayBuffer();
-    const data = new Uint8Array(arrayBuffer);
-    const workbook = xlsx.read(data, { type: 'array' });
-    return processWorkbook(workbook);
-  } catch (err) {
-    console.error("Error loading default bank:", err);
-    throw err;
+  if (!defaultBankPromise) {
+    defaultBankPromise = fetch(`${import.meta.env.BASE_URL}Exams2.xlsx`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Failed to fetch default bank: ${response.statusText}`);
+        }
+        return response.arrayBuffer();
+      })
+      .then(arrayBuffer => processWorkbook(xlsx.read(arrayBuffer, { type: 'array' })))
+      .catch(err => {
+        defaultBankPromise = undefined;
+        console.error("Error loading default bank:", err);
+        throw err;
+      });
   }
+
+  return defaultBankPromise;
 };

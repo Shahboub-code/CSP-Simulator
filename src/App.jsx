@@ -44,28 +44,26 @@ function App() {
   }, []);
 
   const handleSelectOption = useCallback((option) => {
-    setQuestions(prev => {
-      const currentQ = prev[currentIndex];
-      if (!currentQ || answers[currentQ.id]) return prev;
-      setAnswers(prevAns => ({
-        ...prevAns,
-        [currentQ.id]: option
-      }));
-      return prev;
+    const questionId = questions[currentIndex]?.id;
+    if (!questionId) return;
+
+    setAnswers(prev => {
+      if (prev[questionId]) return prev;
+      return { ...prev, [questionId]: option };
     });
-  }, [currentIndex, answers]);
+  }, [currentIndex, questions]);
 
   const handleToggleFlag = useCallback(() => {
-    setQuestions(prev => {
-      const currentQ = prev[currentIndex];
-      if (!currentQ) return prev;
-      setFlagged(prevFlag => ({
-        ...prevFlag,
-        [currentQ.id]: !prevFlag[currentQ.id]
-      }));
-      return prev;
+    const questionId = questions[currentIndex]?.id;
+    if (!questionId) return;
+
+    setFlagged(prev => {
+      const next = { ...prev };
+      if (next[questionId]) delete next[questionId];
+      else next[questionId] = true;
+      return next;
     });
-  }, [currentIndex]);
+  }, [currentIndex, questions]);
 
   const handleNext = useCallback(() => {
     setCurrentIndex(prev => {

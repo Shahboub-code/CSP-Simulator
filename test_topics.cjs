@@ -1,7 +1,5 @@
 const xlsx = require('xlsx');
-const fs = require('fs');
-
-const workbook = xlsx.readFile('public/Exams.xlsx');
+const workbook = xlsx.readFile('public/Exams2.xlsx');
 const firstSheetName = workbook.SheetNames[0];
 const worksheet = workbook.Sheets[firstSheetName];
 const jsonData = xlsx.utils.sheet_to_json(worksheet);

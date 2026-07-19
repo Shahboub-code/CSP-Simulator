@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, memo, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, memo, useCallback } from 'react';
 import OptionCard from './OptionCard';
 import { Flag, LayoutGrid } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -64,24 +64,10 @@ const QuizView = memo(({
   onSelectOption, onToggleFlag, onNext, onPrevious, onJumpTo, onFinish
 }) => {
   const [showGrid, setShowGrid] = useState(false);
-  const [suspenseActive, setSuspenseActive] = useState(false);
-  const suspenseTimerRef = useRef(null);
-  
-  useEffect(() => {
-    setSuspenseActive(false);
-    if (suspenseTimerRef.current) {
-      clearTimeout(suspenseTimerRef.current);
-    }
-  }, [currentIndex]);
 
   const handleOptionClick = useCallback((option) => {
     if (selectedAnswer) return;
-    setSuspenseActive(true);
     onSelectOption(option);
-    
-    suspenseTimerRef.current = setTimeout(() => {
-      setSuspenseActive(false);
-    }, 2000);
   }, [selectedAnswer, onSelectOption]);
 
   if (!question) return null;
@@ -145,7 +131,7 @@ const QuizView = memo(({
           <div className="space-y-3 mb-8">
             {question.options.map((option, idx) => {
               const isSelected = selectedAnswer === option;
-              const showResult = !!selectedAnswer && !suspenseActive;
+              const showResult = !!selectedAnswer;
               const isCorrectAnswer = option === question.correctAnswer;
               const isWrongSelected = isSelected && !isCorrectAnswer;
 
@@ -163,7 +149,7 @@ const QuizView = memo(({
             })}
           </div>
 
-          {selectedAnswer && !suspenseActive && question.explanation && (
+          {selectedAnswer && question.explanation && (
             <motion.div 
               initial={{ opacity: 0, scaleY: 0.95 }}
               animate={{ opacity: 1, scaleY: 1 }}

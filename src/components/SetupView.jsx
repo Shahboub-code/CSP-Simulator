@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Upload, AlertCircle, RefreshCw, Zap, Target, Award, ArrowRight } from 'lucide-react';
 import { parseExcelFile, loadDefaultBank } from '../utils/excelParser';
 
@@ -30,11 +30,8 @@ const SetupView = ({ onDataLoaded }) => {
       setError(null);
       setLoading(true);
       try {
-        let allQuestions = [];
-        for (const f of files) {
-          const questions = await parseExcelFile(f);
-          allQuestions = [...allQuestions, ...questions];
-        }
+        const banks = await Promise.all(files.map(parseExcelFile));
+        const allQuestions = banks.flat();
         
         // Remove duplicates by question text to be safe
         const uniqueQuestions = [];
@@ -109,13 +106,13 @@ const SetupView = ({ onDataLoaded }) => {
     });
   };
 
-  const uniqueTopics = parsedBank 
-    ? ['All Topics', ...Array.from(new Set(parsedBank.map(q => q.topic))).sort()] 
-    : [];
+  const uniqueTopics = useMemo(() => parsedBank
+    ? ['All Topics', ...Array.from(new Set(parsedBank.map(q => q.topic))).sort()]
+    : [], [parsedBank]);
     
-  const filteredBankLength = parsedBank 
+  const filteredBankLength = useMemo(() => parsedBank
     ? (selectedTopic === 'All Topics' ? parsedBank.length : parsedBank.filter(q => q.topic === selectedTopic).length)
-    : 0;
+    : 0, [parsedBank, selectedTopic]);
 
   return (
     <div className="max-w-5xl mx-auto mt-4 md:mt-8 relative">
