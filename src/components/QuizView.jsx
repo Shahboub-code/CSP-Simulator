@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, memo, useCallback } from 'react';
 import OptionCard from './OptionCard';
+import ExplanationContent from './ExplanationContent';
 import { Flag, LayoutGrid } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -159,9 +160,7 @@ const QuizView = memo(({
             >
               <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 rounded-xl p-5">
                 <h5 className="text-sm font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400 mb-2">Explanation</h5>
-                <p className="text-gray-700 dark:text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">
-                  {question.explanation}
-                </p>
+                <ExplanationContent>{question.explanation}</ExplanationContent>
               </div>
             </motion.div>
           )}

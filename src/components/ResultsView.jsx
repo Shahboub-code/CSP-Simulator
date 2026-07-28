@@ -1,4 +1,5 @@
 import { CheckCircle2, XCircle, RotateCcw, Flag, ArrowDown, PartyPopper } from 'lucide-react';
+import ExplanationContent from './ExplanationContent';
 
 const ResultsView = ({ questions, answers, flaggedMap, examConfig, onRestart }) => {
   const score = questions.reduce((acc, q) => {
@@ -159,9 +160,7 @@ const ResultsView = ({ questions, answers, flaggedMap, examConfig, onRestart }) 
                 <div className="px-6 pb-6 pt-2">
                   <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30 rounded-xl p-5">
                     <h5 className="text-sm font-bold uppercase tracking-wider text-blue-700 dark:text-blue-400 mb-2">Explanation</h5>
-                    <p className="text-gray-700 dark:text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">
-                      {q.explanation}
-                    </p>
+                    <ExplanationContent>{q.explanation}</ExplanationContent>
                   </div>
                 </div>
               )}
