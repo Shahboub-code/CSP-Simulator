@@ -28,6 +28,5 @@ dist-ssr
 outputs/
 fix1.png
 
-# Private source documents and question banks
+# Keep source PDFs private
 *.pdf
-public/*.xlsx

@@ -1,13 +1,27 @@
-import { useState, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Upload, AlertCircle, RefreshCw, Zap, Target, Award, ArrowRight } from 'lucide-react';
-import { parseExcelFile } from '../utils/excelParser';
+import { parseExcelFile, loadDefaultBank } from '../utils/excelParser';
 
 const SetupView = ({ onDataLoaded }) => {
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [parsedBank, setParsedBank] = useState(null);
   const [selectedTopic, setSelectedTopic] = useState('All Topics');
 
+  useEffect(() => {
+    const fetchDefault = async () => {
+      try {
+        const questions = await loadDefaultBank();
+        setParsedBank(questions);
+        setError(null);
+      } catch (err) {
+        console.warn("Default bank not found or failed to load. Falling back to manual upload.", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchDefault();
+  }, []);
 
   const handleFileChange = async (e) => {
     const files = Array.from(e.target.files);
