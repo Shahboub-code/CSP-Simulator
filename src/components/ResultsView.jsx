@@ -1,4 +1,4 @@
-import { CheckCircle2, XCircle, RotateCcw, Flag, ArrowDown } from 'lucide-react';
+import { CheckCircle2, XCircle, RotateCcw, Flag, ArrowDown, PartyPopper } from 'lucide-react';
 
 const ResultsView = ({ questions, answers, flaggedMap, examConfig, onRestart }) => {
   const score = questions.reduce((acc, q) => {
@@ -27,9 +27,12 @@ const ResultsView = ({ questions, answers, flaggedMap, examConfig, onRestart }) 
       <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md border border-gray-100 dark:border-slate-700 p-8 sm:p-12 mb-8 text-center transition-colors">
         
         <div className="flex flex-col items-center justify-center space-y-3 mb-10">
-          <h2 className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-            {passed ? 'Congratulations! 🎉' : 'Exam Completed'}
-          </h2>
+          <div className="flex items-center justify-center gap-3">
+            <h2 className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+              {passed ? 'Congratulations!' : 'Exam Completed'}
+            </h2>
+            {passed && <PartyPopper className="w-9 h-9 sm:w-11 sm:h-11 text-amber-500" aria-hidden="true" />}
+          </div>
           <p className="text-lg sm:text-xl text-gray-500 dark:text-gray-400 max-w-lg">
             {passed 
               ? "You've successfully passed the exam. Great job!" 

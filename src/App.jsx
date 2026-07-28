@@ -1,4 +1,5 @@
 import { useState, useEffect, lazy, Suspense, useCallback, useMemo } from 'react';
+import { Heart } from 'lucide-react';
 import Header from './components/Header';
 import ConfirmationModal from './components/ConfirmationModal';
 
@@ -165,7 +166,7 @@ function App() {
       <footer className="py-8 text-center pb-12">
         <div className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 shadow-sm text-slate-gray dark:text-slate-300 hover:shadow-md hover:border-safety-blue/30 dark:hover:border-safety-blue/50 transition-all duration-300 group">
           <span className="font-signature text-2xl tracking-wide">Crafted with</span>
-          <span className="text-rose-red group-hover:scale-125 transition-transform duration-300 text-xl">♥</span>
+          <Heart className="w-5 h-5 text-rose-red fill-current group-hover:scale-125 transition-transform duration-300" aria-hidden="true" />
           <span className="font-signature text-2xl tracking-wide">by</span>
           <span className="font-signature font-bold text-3xl text-safety-blue dark:text-cyan-400 bg-safety-blue/5 dark:bg-safety-blue/10 px-4 py-1.5 rounded-md group-hover:bg-safety-blue/10 dark:group-hover:bg-safety-blue/20 transition-colors tracking-wide">
             A.Shahboub
