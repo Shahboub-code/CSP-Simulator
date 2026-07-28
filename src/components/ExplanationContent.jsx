@@ -1,9 +1,19 @@
-const SUPERSCRIPTS = { 2: '²', 3: '³' };
+const SUPERSCRIPTS = { '-': '⁻', '+': '⁺', 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹' };
+const SUBSCRIPTS = { 0: '₀', 1: '₁', 2: '₂', 3: '₃', 4: '₄', 5: '₅', 6: '₆', 7: '₇', 8: '₈', 9: '₉', n: 'ₙ' };
+const toScript = (value, map) => [...String(value)].map((character) => map[character] ?? character).join('');
 
 const normalizeMathText = (value) => String(value ?? '')
-  .replace(/\u00ba/g, '°')
+  .replace(/[□�]+/g, '⋯')
+  .replace(/[º˚]/g, '°')
   .replace(/\s+\*\s+/g, ' × ')
-  .replace(/\b(m|cm|mm|ft|in|sec)([23])\b/gi, (_, unit, power) => `${unit}${SUPERSCRIPTS[power]}`)
+  .replace(/(\d)\s*[xX]\s*(?=\d|\()/g, '$1 × ')
+  .replace(/(\d)\s*\((\d+(?:\.\d+)?)\)/g, '$1 × $2')
+  .replace(/\b(m|cm|mm|km|ft|in|sec)([23])\b/gi, (_, unit, power) => `${unit}${toScript(power, SUPERSCRIPTS)}`)
+  .replace(/\b([abcstv])([23])\b/g, (_, variable, power) => `${variable}${toScript(power, SUPERSCRIPTS)}`)
+  .replace(/\b10\s*([-+]\d+)\b/g, (_, exponent) => `10${toScript(exponent, SUPERSCRIPTS)}`)
+  .replace(/\b(CO|O|N|H|SO|NO)([234])\b/g, (_, chemical, index) => `${chemical}${toScript(index, SUBSCRIPTS)}`)
+  .replace(/\b([CPVT])\s*([12n])\b/g, (_, variable, index) => `${variable}${toScript(index, SUBSCRIPTS)}`)
+  .replace(/\bH\+/g, 'H⁺')
   .replace(/\s{2,}/g, ' ')
   .trim();
 
@@ -11,18 +21,18 @@ const splitIntoBlocks = (value) => {
   const normalized = normalizeMathText(value);
   if (!normalized) return [];
 
-  // Imported spreadsheets frequently flatten separate equation lines into one cell.
-  // Restore a line break before each recognizable assignment or calculation.
-  const withEquationBreaks = normalized.replace(
-    /\s+(?=(?:[A-Z][A-Za-z]*(?:\([^)]{1,30}\))?|[A-Z]{1,8}|[a-z]{1,3})\s*=)/g,
-    '\n',
-  );
+  const restoredLines = normalized
+    .replace(/\s+(?=(?:Where:|Therefore:|Thus:|Remember(?: that)?:|NOTE:|The correct solution is))/gi, '\n')
+    .replace(
+      /\s+(?=(?:[A-Z][A-Za-z]*(?:\([^)]{1,30}\))?|[A-Z]{1,8}|[a-z]{1,3})\s*=)/g,
+      '\n',
+    );
 
-  return withEquationBreaks
+  return restoredLines
     .split(/\r?\n+/)
     .map((text) => ({
       text: text.trim(),
-      isEquation: /(?:=|≤|≥|≈|∑|√|\b(?:sin|cos|tan)\b)/i.test(text),
+      isEquation: /(?:=|≤|≥|≈|∑|√|\b(?:sin|cos|tan|log)\b)/i.test(text),
     }))
     .filter((block) => block.text);
 };
