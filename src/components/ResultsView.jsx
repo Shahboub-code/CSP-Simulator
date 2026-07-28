@@ -110,8 +110,6 @@ const ResultsView = ({ questions, answers, flaggedMap, examConfig, onRestart }) 
           const isUnanswered = !userAnswer;
           const isFlagged = flaggedMap && !!flaggedMap[q.id];
           
-          if (isUnanswered) return null;
-          
           return (
             <div key={q.id} className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 overflow-hidden transition-colors">
               <div className={`px-6 py-5 border-b flex items-start gap-4

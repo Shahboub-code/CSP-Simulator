@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local review and generated artifacts
+.pdf_tools/
+outputs/
+fix1.png

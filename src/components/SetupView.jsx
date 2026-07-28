@@ -53,7 +53,12 @@ const SetupView = ({ onDataLoaded }) => {
             uniqueQuestions.push(q);
           }
         }
-        setParsedBank(uniqueQuestions);
+        // Each workbook starts numbering at 1. Reassign IDs after merging so
+        // answers, flags, scores, and React keys cannot collide across files.
+        setParsedBank(uniqueQuestions.map((question, index) => ({
+          ...question,
+          id: index + 1,
+        })));
       } catch (err) {
         setError(err.message);
         setParsedBank(null);
