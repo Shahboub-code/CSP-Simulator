@@ -27,3 +27,7 @@ dist-ssr
 .pdf_tools/
 outputs/
 fix1.png
+
+# Private source documents and question banks
+*.pdf
+public/*.xlsx

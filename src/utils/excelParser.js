@@ -1,7 +1,5 @@
 import * as xlsx from 'xlsx';
 
-let defaultBankPromise;
-
 const processWorkbook = (workbook) => {
   // Use the first sheet
   const firstSheetName = workbook.SheetNames[0];
@@ -212,22 +210,3 @@ export const parseExcelFile = (file) => {
   });
 };
 
-export const loadDefaultBank = async () => {
-  if (!defaultBankPromise) {
-    defaultBankPromise = fetch(`${import.meta.env.BASE_URL}Exams2.xlsx`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`Failed to fetch default bank: ${response.statusText}`);
-        }
-        return response.arrayBuffer();
-      })
-      .then(arrayBuffer => processWorkbook(xlsx.read(arrayBuffer, { type: 'array' })))
-      .catch(err => {
-        defaultBankPromise = undefined;
-        console.error("Error loading default bank:", err);
-        throw err;
-      });
-  }
-
-  return defaultBankPromise;
-};

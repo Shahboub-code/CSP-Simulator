@@ -8,13 +8,13 @@ A private, browser-based practice exam simulator for Certified Safety Profession
 
 CSP Simulator turns an Excel question bank into a focused exam experience without accounts, subscriptions, or a backend. Question files are parsed in the browser, so uploaded study material is not sent to a server.
 
-The application ships with a default question bank and also accepts custom workbook uploads. Users can practice a selected topic, simulate ASP or CSP exam scoring, navigate between questions, flag items for review, and inspect detailed results after submission.
+Users load their own workbook locally, then practice a selected topic, simulate ASP or CSP exam scoring, navigate between questions, flag items for review, and inspect detailed results after submission.
 
 > This is an independent study tool. It is not affiliated with or endorsed by the Board of Certified Safety Professionals (BCSP).
 
 ## Features
 
-- Built-in question bank with support for custom `.xlsx`, `.xls`, and `.csv` files
+- Local `.xlsx`, `.xls`, and `.csv` question-bank uploads
 - Multiple-file upload and question deduplication
 - Practice, 200-question ASP, and 200-question CSP exam modes
 - Topic filtering and randomized question selection
@@ -108,7 +108,7 @@ npm run merge
 
 This runs `auto_merge_banks.py` followed by `dedup_bank.py` and requires Python plus `pandas` and an Excel engine such as `openpyxl`.
 
-Important: these scripts currently maintain `public/Exams.xlsx`, while the application loads `public/Exams2.xlsx`. Review or reconcile the filenames before relying on this command to update the shipped bank. The merge script also renames processed text and CSV inputs with a `.processed` suffix, so commit or back up source data first.
+Important: these scripts create a local workbook under `public/`, but question-bank files are ignored by Git and are not deployed. The merge script also renames processed text and CSV inputs with a `.processed` suffix, so commit or back up source data first.
 
 ## Deployment
 
